@@ -361,3 +361,29 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Visual Studio / WPF
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Analysis output
+PythonAnalysis/input/
+PythonAnalysis/output/
+*.wav
+*.mp4
+*.mov
+*.avi
+
+# SQLite
+*.db
+*.sqlite
+*.sqlite3

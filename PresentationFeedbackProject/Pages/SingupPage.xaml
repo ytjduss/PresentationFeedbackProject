@@ -1,0 +1,148 @@
+﻿<Page x:Class="PresentationFeedbackUI.Pages.SignupPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      Background="#FAFAFA">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.05*"/>
+            <ColumnDefinition Width="0.95*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Left Intro -->
+        <Border Grid.Column="0"
+                Background="{StaticResource MintLightBrush}"
+                BorderBrush="{StaticResource BlackBrush}"
+                BorderThickness="1.5"
+                CornerRadius="18"
+                Padding="44"
+                Margin="0,0,14,0">
+            <Grid>
+                <Ellipse Width="260"
+                         Height="260"
+                         Fill="{StaticResource MintBrush}"
+                         Opacity="0.25"
+                         HorizontalAlignment="Left"
+                         VerticalAlignment="Bottom"
+                         Margin="-110,0,0,-80"/>
+
+                <TextBlock Text="✦"
+                           Foreground="{StaticResource MintBrush}"
+                           FontSize="42"
+                           FontWeight="Black"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Top"
+                           Margin="0,40,80,0"/>
+
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="CREATE"
+                               Foreground="{StaticResource BlackBrush}"
+                               FontSize="48"
+                               FontWeight="Black"/>
+
+                    <TextBlock Text="YOUR ACCOUNT"
+                               Foreground="{StaticResource BlackBrush}"
+                               FontSize="48"
+                               FontWeight="Black"/>
+
+                    <TextBlock Text="발표 분석 결과를 저장하고&#x0a;이전 기록과 비교할 수 있어요."
+                               Foreground="{StaticResource BlackBrush}"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               LineHeight="28"
+                               Margin="0,26,0,0"/>
+
+                    <Border Width="240"
+                            Height="70"
+                            Background="{StaticResource WhiteBrush}"
+                            BorderBrush="{StaticResource BlackBrush}"
+                            BorderThickness="1.5"
+                            CornerRadius="26"
+                            HorizontalAlignment="Left"
+                            Margin="90,42,0,0">
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="ʕ•ᴥ•ʔ"
+                                       FontSize="24"
+                                       Margin="0,0,14,0"/>
+                            <TextBlock Text="WELCOME!"
+                                       Foreground="{StaticResource MintBrush}"
+                                       FontSize="18"
+                                       FontWeight="Black"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Signup Card -->
+        <Border Grid.Column="1"
+                Style="{StaticResource Card}"
+                Width="420"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Padding="34">
+            <StackPanel>
+                <TextBlock Text="회원가입"
+                           Foreground="{StaticResource BlackBrush}"
+                           FontSize="25"
+                           FontWeight="Black"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,28"/>
+
+                <TextBlock Text="아이디"
+                           Foreground="{StaticResource BlackBrush}"
+                           FontSize="13"
+                           FontWeight="Black"
+                           Margin="0,0,0,8"/>
+
+                <TextBox x:Name="UsernameTextBox"
+                         Style="{StaticResource InputBox}"
+                         Margin="0,0,0,14"/>
+
+                <TextBlock Text="이름"
+                           Foreground="{StaticResource BlackBrush}"
+                           FontSize="13"
+                           FontWeight="Black"
+                           Margin="0,0,0,8"/>
+
+                <TextBox x:Name="DisplayNameTextBox"
+                         Style="{StaticResource InputBox}"
+                         Margin="0,0,0,14"/>
+
+                <TextBlock Text="비밀번호"
+                           Foreground="{StaticResource BlackBrush}"
+                           FontSize="13"
+                           FontWeight="Black"
+                           Margin="0,0,0,8"/>
+
+                <PasswordBox x:Name="PasswordBox"
+                             Style="{StaticResource InputPassword}"
+                             Margin="0,0,0,14"/>
+
+                <TextBlock Text="비밀번호 확인"
+                           Foreground="{StaticResource BlackBrush}"
+                           FontSize="13"
+                           FontWeight="Black"
+                           Margin="0,0,0,8"/>
+
+                <PasswordBox x:Name="PasswordConfirmBox"
+                             Style="{StaticResource InputPassword}"
+                             Margin="0,0,0,24"/>
+
+                <Button Content="회원가입"
+                        Style="{StaticResource PrimaryButton}"
+                        Height="48"
+                        Click="RegisterButton_Click"/>
+
+                <Button Content="로그인으로 돌아가기"
+                        Style="{StaticResource SecondaryButton}"
+                        Height="48"
+                        Margin="0,12,0,0"
+                        Click="BackLoginButton_Click"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Page>

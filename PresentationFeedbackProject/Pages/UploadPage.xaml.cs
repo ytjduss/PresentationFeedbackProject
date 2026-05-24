@@ -1,5 +1,11 @@
-﻿using System.Windows;
+﻿using Microsoft.Win32;
+using System;
+using System.IO;
+using System.Linq;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
 using PresentationFeedbackUI.Services;
 
 namespace PresentationFeedbackUI.Pages
@@ -9,7 +15,12 @@ namespace PresentationFeedbackUI.Pages
         private readonly MainWindow mainWindow;
         private readonly VideoAnalysisService analysisService = new VideoAnalysisService();
 
-        private string selectedVideoPath = "presentation_sample.mp4";
+        private string selectedVideoPath = "";
+
+        private readonly string[] allowedExtensions =
+        {
+            ".mp4", ".mov", ".avi"
+        };
 
         public UploadPage(MainWindow mainWindow)
         {
@@ -17,11 +28,159 @@ namespace PresentationFeedbackUI.Pages
             this.mainWindow = mainWindow;
         }
 
+        private void SelectFileButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog
+            {
+                Title = "발표 영상 선택",
+                Filter = "Video Files (*.mp4;*.mov;*.avi)|*.mp4;*.mov;*.avi",
+                Multiselect = false
+            };
+
+            bool? result = dialog.ShowDialog();
+
+            if (result == true)
+            {
+                SetSelectedVideo(dialog.FileName);
+            }
+        }
+
+        private void DropZoneBorder_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            SelectFileButton_Click(sender, e);
+        }
+
+        private void DropZoneBorder_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                DropZoneBorder.BorderBrush = Brushes.Black;
+                DropZoneBorder.Background = (Brush)FindResource("MintBrush");
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+        }
+
+        private void DropZoneBorder_DragLeave(object sender, DragEventArgs e)
+        {
+            ResetDropZoneStyle();
+        }
+
+        private void DropZoneBorder_Drop(object sender, DragEventArgs e)
+        {
+            ResetDropZoneStyle();
+
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                return;
+            }
+
+            string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+
+            if (files == null || files.Length == 0)
+            {
+                return;
+            }
+
+            SetSelectedVideo(files[0]);
+        }
+
+        private void SetSelectedVideo(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                MessageBox.Show("파일을 찾을 수 없습니다.");
+                return;
+            }
+
+            string extension = Path.GetExtension(filePath).ToLower();
+
+            if (!allowedExtensions.Contains(extension))
+            {
+                MessageBox.Show("지원하지 않는 파일 형식입니다. MP4, MOV, AVI 파일만 업로드할 수 있습니다.");
+                return;
+            }
+
+            selectedVideoPath = filePath;
+            mainWindow.SelectedVideoPath = selectedVideoPath;
+
+            FileInfo fileInfo = new FileInfo(filePath);
+
+            SelectedFileNameText.Text = fileInfo.Name;
+            SelectedFileSizeText.Text = FormatFileSize(fileInfo.Length);
+
+            FileInfoBorder.Visibility = Visibility.Visible;
+            AnalyzeButton.IsEnabled = true;
+
+            UploadStatusText.Text = "영상 업로드가 완료되었습니다. 분석을 시작할 수 있습니다.";
+        }
+
+        private string FormatFileSize(long bytes)
+        {
+            double size = bytes;
+
+            if (size < 1024)
+            {
+                return $"{size:0} B";
+            }
+
+            size /= 1024;
+
+            if (size < 1024)
+            {
+                return $"{size:0.0} KB";
+            }
+
+            size /= 1024;
+
+            if (size < 1024)
+            {
+                return $"{size:0.0} MB";
+            }
+
+            size /= 1024;
+
+            return $"{size:0.0} GB";
+        }
+
+        private void ResetDropZoneStyle()
+        {
+            DropZoneBorder.BorderBrush = (Brush)FindResource("MintBrush");
+            DropZoneBorder.Background = (Brush)FindResource("MintLightBrush");
+        }
+
         private async void AnalyzeButton_Click(object sender, RoutedEventArgs e)
         {
-            var result = await analysisService.AnalyzeAsync(selectedVideoPath);
-            mainWindow.AnalysisViewModel.SetResult(result);
-            mainWindow.NavigateToAnalysis();
+            if (string.IsNullOrWhiteSpace(selectedVideoPath))
+            {
+                MessageBox.Show("먼저 영상을 업로드해주세요.");
+                return;
+            }
+
+            try
+            {
+                AnalyzeButton.IsEnabled = false;
+                AnalyzeButton.Content = "분석 중...";
+
+                mainWindow.SelectedVideoPath = selectedVideoPath;
+
+                var result = await analysisService.AnalyzeAsync(selectedVideoPath);
+
+                mainWindow.AnalysisViewModel.SetResult(result);
+                mainWindow.NavigateToAnalysis();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("분석 중 오류가 발생했습니다.\n" + ex.Message);
+            }
+            finally
+            {
+                AnalyzeButton.Content = "분석 시작하기  →";
+                AnalyzeButton.IsEnabled = true;
+            }
         }
     }
 }

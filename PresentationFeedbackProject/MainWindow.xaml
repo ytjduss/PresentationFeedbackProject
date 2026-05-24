@@ -39,9 +39,9 @@
                                Margin="0,-6,0,0"/>
                 </Border>
 
-                <TextBlock Text="SPEECH PRACTICE"
+                <TextBlock Text="PRESENTATION PRACTICE"
                            Foreground="{StaticResource BlackBrush}"
-                           FontSize="16"
+                           FontSize="13"
                            FontWeight="Black"
                            VerticalAlignment="Center"/>
             </StackPanel>

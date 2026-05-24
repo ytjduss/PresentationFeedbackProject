@@ -1,13 +1,19 @@
-﻿using System.Windows;
-using System.Windows.Media;
+﻿
 using PresentationFeedbackUI.Pages;
+using PresentationFeedbackUI.Services;
 using PresentationFeedbackUI.ViewModels;
+using System.Windows;
+using System.Windows.Media;
 
 namespace PresentationFeedbackUI
 {
     public partial class MainWindow : Window
+
     {
         public AnalysisViewModel AnalysisViewModel { get; } = new AnalysisViewModel();
+
+        private readonly AuthService authService = new AuthService();
+        public string SelectedVideoPath { get; set; } = "";
 
         public MainWindow()
         {
@@ -19,6 +25,12 @@ namespace PresentationFeedbackUI
         {
             SetStep(1);
             MainFrame.Navigate(new LoginPage(this));
+        }
+
+        public void NavigateToSignup()
+        {
+            SetStep(1);
+            MainFrame.Navigate(new SignupPage(this));
         }
 
         public void NavigateToUpload()
@@ -37,6 +49,12 @@ namespace PresentationFeedbackUI
         {
             SetStep(4);
             MainFrame.Navigate(new ScorePage(this));
+        }
+
+        private void LogoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            authService.Logout();
+            NavigateToLogin();
         }
 
         private void SetStep(int step)

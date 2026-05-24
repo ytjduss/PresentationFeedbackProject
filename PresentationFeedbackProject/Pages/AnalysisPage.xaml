@@ -9,6 +9,7 @@
             <ColumnDefinition Width="1*"/>
         </Grid.ColumnDefinitions>
 
+        <!-- Left Video + Timeline -->
         <Grid Grid.Column="0"
               Margin="0,0,22,0">
 
@@ -18,55 +19,134 @@
                 <RowDefinition Height="160"/>
             </Grid.RowDefinitions>
 
+            <!-- Title -->
             <TextBlock Grid.Row="0"
                        Text="← 발표 영상"
                        Foreground="{StaticResource BlackBrush}"
                        FontSize="17"
-                       FontWeight="Black"/>
+                       FontWeight="Black"
+                       VerticalAlignment="Top"/>
 
+            <!-- Video Card -->
             <Border Grid.Row="1"
                     Style="{StaticResource Card}"
                     Padding="0"
                     Margin="0,8,0,18">
+
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="58"/>
+                        <RowDefinition Height="64"/>
                     </Grid.RowDefinitions>
 
+                    <!-- Video Preview -->
                     <Border Grid.Row="0"
                             Background="{StaticResource BlackBrush}"
-                            CornerRadius="14,14,0,0">
-                        <TextBlock Text="VIDEO PREVIEW"
-                                   Foreground="{StaticResource WhiteBrush}"
-                                   FontSize="34"
-                                   FontWeight="Black"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
+                            CornerRadius="14,14,0,0"
+                            ClipToBounds="True">
+
+                        <Grid>
+                            <MediaElement x:Name="AnalysisVideoPlayer"
+                                          LoadedBehavior="Manual"
+                                          UnloadedBehavior="Stop"
+                                          Stretch="Uniform"
+                                          Volume="0.6"/>
+
+                            <TextBlock x:Name="NoVideoText"
+                                       Text="VIDEO PREVIEW"
+                                       Foreground="{StaticResource WhiteBrush}"
+                                       FontSize="34"
+                                       FontWeight="Black"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"/>
+                        </Grid>
                     </Border>
 
+                    <!-- Video Controller + Timeline Slider -->
                     <Grid Grid.Row="1"
                           Background="{StaticResource BlackBrush}">
-                        <TextBlock Text="▶  01:23 / 04:12"
-                                   Foreground="{StaticResource WhiteBrush}"
-                                   FontSize="14"
-                                   FontWeight="Bold"
-                                   VerticalAlignment="Center"
-                                   Margin="22,0,0,0"/>
 
-                        <TextBlock Text="⚙  ⛶"
-                                   Foreground="{StaticResource WhiteBrush}"
-                                   FontSize="18"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,22,0"/>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="34"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Control Buttons -->
+                        <Grid Grid.Row="0">
+                            <StackPanel Orientation="Horizontal"
+                                        VerticalAlignment="Center"
+                                        Margin="22,0,0,0">
+
+                                <Button Content="▶"
+                                        Width="36"
+                                        Height="26"
+                                        Background="{StaticResource MintBrush}"
+                                        Foreground="{StaticResource BlackBrush}"
+                                        BorderThickness="0"
+                                        FontWeight="Black"
+                                        Click="VideoPlayButton_Click"/>
+
+                                <Button Content="⏸"
+                                        Width="36"
+                                        Height="26"
+                                        Background="{StaticResource WhiteBrush}"
+                                        Foreground="{StaticResource BlackBrush}"
+                                        BorderThickness="0"
+                                        FontWeight="Black"
+                                        Margin="8,0,0,0"
+                                        Click="VideoPauseButton_Click"/>
+
+                                <Button Content="↺"
+                                        Width="36"
+                                        Height="26"
+                                        Background="{StaticResource WhiteBrush}"
+                                        Foreground="{StaticResource BlackBrush}"
+                                        BorderThickness="0"
+                                        FontWeight="Black"
+                                        Margin="8,0,0,0"
+                                        Click="VideoRestartButton_Click"/>
+
+                                <TextBlock x:Name="VideoFileNameText"
+                                           Text="선택된 영상 없음"
+                                           Foreground="{StaticResource WhiteBrush}"
+                                           FontSize="13"
+                                           FontWeight="Bold"
+                                           VerticalAlignment="Center"
+                                           Margin="16,0,0,0"/>
+                            </StackPanel>
+
+                            <TextBlock x:Name="VideoTimeText"
+                                       Text="00:00 / 00:00"
+                                       Foreground="{StaticResource WhiteBrush}"
+                                       FontSize="13"
+                                       FontWeight="Bold"
+                                       HorizontalAlignment="Right"
+                                       VerticalAlignment="Center"
+                                       Margin="0,0,22,0"/>
+                        </Grid>
+
+                        <!-- Video Timeline Slider -->
+                        <Grid Grid.Row="1"
+                              Margin="22,0,22,8">
+
+                            <Slider x:Name="VideoTimelineSlider"
+                                    Minimum="0"
+                                    Maximum="1"
+                                    Value="0"
+                                    VerticalAlignment="Center"
+                                    PreviewMouseDown="VideoTimelineSlider_PreviewMouseDown"
+                                    PreviewMouseUp="VideoTimelineSlider_PreviewMouseUp"/>
+                        </Grid>
                     </Grid>
                 </Grid>
             </Border>
 
+            <!-- Analysis Timeline Area -->
             <Border Grid.Row="2"
                     Style="{StaticResource Card}"
-                    Padding="16">
+                    Padding="16"
+                    Margin="0">
+
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="26"/>
@@ -79,10 +159,13 @@
                                Text="타임라인 분석"
                                Foreground="{StaticResource BlackBrush}"
                                FontSize="18"
-                               FontWeight="Black"/>
+                               FontWeight="Black"
+                               VerticalAlignment="Top"/>
 
+                    <!-- Timeline Bar -->
                     <Grid Grid.Row="1"
                           Margin="0,8,0,0">
+
                         <Border Height="8"
                                 Background="#E5E5E5"
                                 CornerRadius="4"
@@ -120,6 +203,7 @@
                                 VerticalAlignment="Center"/>
                     </Grid>
 
+                    <!-- Time Labels -->
                     <Grid Grid.Row="2">
                         <TextBlock Text="0:00"
                                    Foreground="{StaticResource TextGrayBrush}"
@@ -137,9 +221,11 @@
                                    HorizontalAlignment="Right"/>
                     </Grid>
 
+                    <!-- Legend -->
                     <StackPanel Grid.Row="3"
                                 Orientation="Horizontal"
                                 VerticalAlignment="Bottom">
+
                         <TextBlock Text="● SPEED"
                                    Foreground="{StaticResource MintBrush}"
                                    FontSize="12"
@@ -167,7 +253,9 @@
             </Border>
         </Grid>
 
+        <!-- Right Summary -->
         <Grid Grid.Column="1">
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="34"/>
                 <RowDefinition Height="128"/>
@@ -179,12 +267,15 @@
                        Text="분석 결과 요약"
                        Foreground="{StaticResource BlackBrush}"
                        FontSize="20"
-                       FontWeight="Black"/>
+                       FontWeight="Black"
+                       VerticalAlignment="Top"/>
 
+            <!-- Speed Summary -->
             <Border Grid.Row="1"
                     Style="{StaticResource Card}"
                     Padding="18"
                     Margin="0,8,0,12">
+
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="86"/>
@@ -195,7 +286,8 @@
                     <Grid Width="62"
                           Height="62">
                         <Ellipse Fill="{StaticResource MintLightBrush}"/>
-                        <TextBlock Text="SPEED"
+
+                        <TextBlock Text="속도"
                                    FontSize="9"
                                    FontWeight="Black"
                                    HorizontalAlignment="Center"
@@ -204,9 +296,11 @@
 
                     <StackPanel Grid.Column="1"
                                 VerticalAlignment="Center">
+
                         <TextBlock Text="{Binding WpmText}"
                                    FontSize="28"
-                                   FontWeight="Black"/>
+                                   FontWeight="Black"
+                                   Foreground="{StaticResource BlackBrush}"/>
 
                         <TextBlock Text="권장 범위 100~160 WPM"
                                    Foreground="{StaticResource TextGrayBrush}"
@@ -215,6 +309,7 @@
 
                         <Grid Height="8"
                               Margin="0,14,0,0">
+
                             <Border Background="#E5E5E5"
                                     CornerRadius="4"/>
 
@@ -228,6 +323,7 @@
                     <Grid Grid.Column="2"
                           Width="64"
                           Height="64">
+
                         <Ellipse Stroke="{StaticResource MintBrush}"
                                  StrokeThickness="5"/>
 
@@ -236,11 +332,13 @@
                                    FontWeight="Black"
                                    TextAlignment="Center"
                                    HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"/>
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource BlackBrush}"/>
                     </Grid>
                 </Grid>
             </Border>
 
+            <!-- Detail Cards -->
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
@@ -249,62 +347,123 @@
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
+                <!-- Eye Contact -->
                 <Border Grid.Row="0"
                         Style="{StaticResource Card}"
                         Padding="16"
                         Margin="0,0,0,10">
+
                     <Grid>
-                        <TextBlock Text="EYE CONTACT"
-                                   FontWeight="Black"/>
+                        <StackPanel>
+                            <TextBlock Text="시선처리"
+                                       FontWeight="Black"
+                                       Foreground="{StaticResource BlackBrush}"/>
+
+                            <TextBlock Text="{Binding EyeContactFeedback}"
+                                       Foreground="{StaticResource TextGrayBrush}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Margin="0,4,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
                         <TextBlock Text="{Binding EyeContactScoreText}"
                                    FontSize="18"
                                    FontWeight="Black"
-                                   HorizontalAlignment="Right"/>
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource BlackBrush}"/>
                     </Grid>
                 </Border>
 
+                <!-- Gesture -->
                 <Border Grid.Row="1"
                         Style="{StaticResource Card}"
                         Padding="16"
                         Margin="0,0,0,10">
+
                     <Grid>
-                        <TextBlock Text="GESTURE"
-                                   FontWeight="Black"/>
+                        <StackPanel>
+                            <TextBlock Text="자세"
+                                       FontWeight="Black"
+                                       Foreground="{StaticResource BlackBrush}"/>
+
+                            <TextBlock Text="{Binding GestureFeedback}"
+                                       Foreground="{StaticResource TextGrayBrush}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Margin="0,4,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
                         <TextBlock Text="{Binding GestureScoreText}"
                                    FontSize="18"
                                    FontWeight="Black"
-                                   HorizontalAlignment="Right"/>
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource BlackBrush}"/>
                     </Grid>
                 </Border>
 
+                <!-- Silence -->
                 <Border Grid.Row="2"
                         Style="{StaticResource Card}"
                         Padding="16"
                         Margin="0,0,0,10">
+
                     <Grid>
-                        <TextBlock Text="SILENCE"
-                                   FontWeight="Black"/>
+                        <StackPanel>
+                            <TextBlock Text="침묵구간"
+                                       FontWeight="Black"
+                                       Foreground="{StaticResource BlackBrush}"/>
+
+                            <TextBlock Text="{Binding SilenceFeedback}"
+                                       Foreground="{StaticResource TextGrayBrush}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Margin="0,4,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
                         <TextBlock Text="{Binding SilenceScoreText}"
                                    FontSize="18"
                                    FontWeight="Black"
-                                   HorizontalAlignment="Right"/>
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource BlackBrush}"/>
                     </Grid>
                 </Border>
 
+                <!-- Content -->
                 <Border Grid.Row="3"
                         Style="{StaticResource Card}"
                         Padding="16">
+
                     <Grid>
-                        <TextBlock Text="CONTENT"
-                                   FontWeight="Black"/>
+                        <StackPanel>
+                            <TextBlock Text="발표내용"
+                                       FontWeight="Black"
+                                       Foreground="{StaticResource BlackBrush}"/>
+
+                            <TextBlock Text="{Binding ContentFeedback}"
+                                       Foreground="{StaticResource TextGrayBrush}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Margin="0,4,0,0"
+                                       TextWrapping="Wrap"/>
+                        </StackPanel>
+
                         <TextBlock Text="{Binding ContentScoreText}"
                                    FontSize="18"
                                    FontWeight="Black"
-                                   HorizontalAlignment="Right"/>
+                                   HorizontalAlignment="Right"
+                                   VerticalAlignment="Center"
+                                   Foreground="{StaticResource BlackBrush}"/>
                     </Grid>
                 </Border>
             </Grid>
 
+            <!-- Score Button -->
             <Button Grid.Row="3"
                     Content="총점 보기"
                     Style="{StaticResource PrimaryButton}"

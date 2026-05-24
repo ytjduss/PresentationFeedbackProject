@@ -45,7 +45,7 @@
                            Margin="0,0,110,0"/>
 
                 <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="SPEECH"
+                    <TextBlock Text="PRESENTATION"
                                Foreground="{StaticResource BlackBrush}"
                                FontSize="48"
                                FontWeight="Black"/>
@@ -230,12 +230,15 @@
                            HorizontalAlignment="Center"
                            Margin="0,0,0,28"/>
 
-                <TextBox Style="{StaticResource InputBox}"
-                         Text=""
-                         Margin="0,0,0,12"/>
+                <TextBox x:Name="UsernameTextBox"
+                Style="{StaticResource InputBox}"
+                Text="student01"
+                Margin="0,0,0,12"/>
 
-                <PasswordBox Style="{StaticResource InputPassword}"
-                             Margin="0,0,0,18"/>
+                <PasswordBox x:Name="PasswordBox"
+                    Style="{StaticResource InputPassword}"
+                   Password="1234"
+                 Margin="0,0,0,18"/>
 
                 <Grid Margin="0,0,0,22">
                     <CheckBox Content="로그인 상태 유지"
@@ -267,12 +270,26 @@
                         Height="48"
                         Click="LoginButton_Click"/>
 
-                <TextBlock Text="계정이 없으신가요?  회원가입"
-                           Foreground="{StaticResource TextGrayBrush}"
-                           FontSize="13"
-                           FontWeight="SemiBold"
-                           HorizontalAlignment="Center"
-                           Margin="0,24,0,0"/>
+                <StackPanel Orientation="Horizontal"
+            HorizontalAlignment="Center"
+            Margin="0,24,0,0">
+                    <TextBlock Text="계정이 없으신가요?"
+               Foreground="{StaticResource TextGrayBrush}"
+               FontSize="13"
+               FontWeight="SemiBold"
+               VerticalAlignment="Center"/>
+
+                    <Button Content="회원가입"
+            Background="Transparent"
+            BorderThickness="0"
+            Foreground="{StaticResource MintBrush}"
+            FontSize="13"
+            FontWeight="Black"
+            Cursor="Hand"
+            Padding="6,0"
+            Click="SignupButton_Click"/>
+                </StackPanel>
+
             </StackPanel>
         </Border>
     </Grid>

@@ -20,12 +20,7 @@
             </Grid.RowDefinitions>
 
             <!-- Title -->
-            <TextBlock Grid.Row="0"
-                       Text="← 발표 영상"
-                       Foreground="{StaticResource BlackBrush}"
-                       FontSize="17"
-                       FontWeight="Black"
-                       VerticalAlignment="Top"/>
+          
 
             <!-- Video Card -->
             <Border Grid.Row="1"

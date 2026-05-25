@@ -258,12 +258,7 @@
                 <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
 
-            <TextBlock Grid.Row="0"
-                       Text="분석 결과 요약"
-                       Foreground="{StaticResource BlackBrush}"
-                       FontSize="20"
-                       FontWeight="Black"
-                       VerticalAlignment="Top"/>
+      
 
             <!-- Speed Summary -->
             <Border Grid.Row="1"

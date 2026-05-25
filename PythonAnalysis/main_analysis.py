@@ -1,8 +1,21 @@
 import sys
 from pathlib import Path
 
+if __package__ is None or __package__ == "":
+    sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 from PythonAnalysis.audio_analyser import extract_audio, analyze_speech_speed, detect_pauses, analyze_voice_density
+#from PythonAnalysis.result_builder import build_result
 from PythonAnalysis.speech_analyser import transcribe_audio, detect_text_issues
+from PythonAnalysis.content_analyzer import analyze_content
+from PythonAnalysis.gaze_analyzer import analyze_gaze
+from PythonAnalysis.gesture_analyzer import analyze_gesture
+from PythonAnalysis.result_builder import (
+    build_final_result,
+    save_final_result
+)
+
+
 # from audio_analyzer import (
 #     extract_audio,
 #     analyze_speech_speed,
@@ -14,15 +27,6 @@ from PythonAnalysis.speech_analyser import transcribe_audio, detect_text_issues
 #     transcribe_audio,
 #     detect_text_issues
 # )
-
-from content_analyzer import analyze_content
-from gaze_analyzer import analyze_gaze
-from gesture_analyzer import analyze_gesture
-
-from result_builder import (
-    build_final_result,
-    save_final_result
-)
 
 
 def print_summary(result):

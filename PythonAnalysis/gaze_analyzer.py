@@ -49,6 +49,9 @@ def get_direction(face_landmarks, width, height):
 
 
 def analyze_gaze(video_path, sample_every_sec=1.0):
+    if not hasattr(mp, "solutions"):
+        return analyze_gaze_with_opencv(video_path, sample_every_sec)
+
     mp_face_mesh = mp.solutions.face_mesh
 
     cap = cv2.VideoCapture(str(video_path))
@@ -178,6 +181,96 @@ def analyze_gaze(video_path, sample_every_sec=1.0):
             "rightRatio": round(right_ratio, 2),
             "noFaceRatio": round(no_face_ratio, 2),
             "sampleCount": total,
+            "feedback": feedback
+        },
+        "issues": issues
+    }
+
+
+def analyze_gaze_with_opencv(video_path, sample_every_sec=1.0):
+    face_detector = cv2.CascadeClassifier(
+        cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+    )
+
+    cap = cv2.VideoCapture(str(video_path))
+
+    if not cap.isOpened():
+        return {
+            "summary": {
+                "frontRatio": 0,
+                "leftRatio": 0,
+                "rightRatio": 0,
+                "noFaceRatio": 1,
+                "sampleCount": 0,
+                "feedback": "영상을 열 수 없어 시선 분석을 수행하지 못했습니다."
+            },
+            "issues": []
+        }
+
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
+    if fps <= 0:
+        fps = 30
+
+    frame_interval = max(1, int(fps * sample_every_sec))
+
+    front_count = 0
+    no_face_count = 0
+    sample_count = 0
+    issues = []
+    frame_idx = 0
+
+    while True:
+        ret, frame = cap.read()
+
+        if not ret:
+            break
+
+        if frame_idx % frame_interval != 0:
+            frame_idx += 1
+            continue
+
+        time_sec = frame_idx / fps
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        faces = face_detector.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
+        sample_count += 1
+
+        if len(faces) > 0:
+            front_count += 1
+        else:
+            no_face_count += 1
+            issues.append({
+                "type": "gaze_no_face",
+                "category": "gaze",
+                "label": "얼굴 미검출",
+                "start": round(time_sec, 2),
+                "end": round(time_sec + sample_every_sec, 2),
+                "time": format_time(time_sec),
+                "message": "얼굴이 감지되지 않았습니다."
+            })
+
+        frame_idx += 1
+
+    cap.release()
+
+    total = sample_count if sample_count > 0 else 1
+    front_ratio = front_count / total
+    no_face_ratio = no_face_count / total
+
+    if front_ratio >= 0.65:
+        feedback = "정면 얼굴 감지 비율이 높은 편입니다."
+    elif front_ratio >= 0.4:
+        feedback = "정면 얼굴이 일부 감지되지만, 얼굴 미검출 구간이 있습니다."
+    else:
+        feedback = "정면 얼굴 감지 비율이 낮아 시선 처리 보완이 필요합니다."
+
+    return {
+        "summary": {
+            "frontRatio": round(front_ratio, 2),
+            "leftRatio": 0,
+            "rightRatio": 0,
+            "noFaceRatio": round(no_face_ratio, 2),
+            "sampleCount": sample_count,
             "feedback": feedback
         },
         "issues": issues

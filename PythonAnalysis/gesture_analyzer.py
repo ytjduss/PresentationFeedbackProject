@@ -42,6 +42,9 @@ def get_hand_positions(pose_landmarks, width, height):
 
 
 def analyze_gesture(video_path, sample_every_sec=0.5):
+    if not hasattr(mp, "solutions"):
+        return analyze_gesture_with_frame_diff(video_path, sample_every_sec)
+
     mp_pose = mp.solutions.pose
 
     cap = cv2.VideoCapture(str(video_path))
@@ -179,6 +182,119 @@ def analyze_gesture(video_path, sample_every_sec=0.5):
         "summary": {
             "gestureLevel": gesture_level,
             "movementScore": round(movement_score, 2),
+            "lowGestureCount": len(issues),
+            "feedback": feedback
+        },
+        "issues": issues
+    }
+
+
+def analyze_gesture_with_frame_diff(video_path, sample_every_sec=0.5):
+    cap = cv2.VideoCapture(str(video_path))
+
+    if not cap.isOpened():
+        return {
+            "summary": {
+                "gestureLevel": "분석 실패",
+                "movementScore": 0,
+                "lowGestureCount": 0,
+                "feedback": "영상을 열 수 없어 손동작 분석을 수행하지 못했습니다."
+            },
+            "issues": []
+        }
+
+    fps = cap.get(cv2.CAP_PROP_FPS)
+
+    if fps <= 0:
+        fps = 30
+
+    frame_interval = max(1, int(fps * sample_every_sec))
+    frame_idx = 0
+    previous_gray = None
+    movement_values = []
+    issues = []
+    current_low_start = None
+
+    while True:
+        ret, frame = cap.read()
+
+        if not ret:
+            break
+
+        if frame_idx % frame_interval != 0:
+            frame_idx += 1
+            continue
+
+        time_sec = frame_idx / fps
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        gray = cv2.resize(gray, (320, 180))
+
+        if previous_gray is None:
+            movement = 0
+        else:
+            diff = cv2.absdiff(gray, previous_gray)
+            movement = float(diff.mean())
+
+        movement_values.append(movement)
+
+        if movement < 2.5:
+            if current_low_start is None:
+                current_low_start = time_sec
+        else:
+            if current_low_start is not None:
+                duration = time_sec - current_low_start
+
+                if duration >= 3.0:
+                    issues.append({
+                        "type": "low_gesture",
+                        "category": "gesture",
+                        "label": "움직임 부족",
+                        "start": round(current_low_start, 2),
+                        "end": round(time_sec, 2),
+                        "duration": round(duration, 2),
+                        "time": format_time(current_low_start),
+                        "message": f"{duration:.1f}초 동안 화면 움직임이 적었습니다."
+                    })
+
+                current_low_start = None
+
+        previous_gray = gray
+        frame_idx += 1
+
+    cap.release()
+
+    if current_low_start is not None:
+        end_time = frame_idx / fps
+        duration = end_time - current_low_start
+
+        if duration >= 3.0:
+            issues.append({
+                "type": "low_gesture",
+                "category": "gesture",
+                "label": "움직임 부족",
+                "start": round(current_low_start, 2),
+                "end": round(end_time, 2),
+                "duration": round(duration, 2),
+                "time": format_time(current_low_start),
+                "message": f"{duration:.1f}초 동안 화면 움직임이 적었습니다."
+            })
+
+    avg_movement = sum(movement_values) / len(movement_values) if movement_values else 0
+
+    if avg_movement < 2.5:
+        gesture_level = "적음"
+        feedback = "화면 움직임이 적어 발표가 다소 정적으로 보일 수 있습니다."
+    elif avg_movement < 8:
+        gesture_level = "보통"
+        feedback = "발표 중 움직임이 어느 정도 감지되었습니다."
+    else:
+        gesture_level = "많음"
+        feedback = "움직임이 많은 편입니다. 과도하면 산만해 보일 수 있습니다."
+
+    return {
+        "summary": {
+            "gestureLevel": gesture_level,
+            "movementScore": round(avg_movement, 2),
             "lowGestureCount": len(issues),
             "feedback": feedback
         },

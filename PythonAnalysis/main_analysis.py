@@ -1,17 +1,19 @@
 import sys
 from pathlib import Path
 
-from audio_analyzer import (
-    extract_audio,
-    analyze_speech_speed,
-    detect_pauses,
-    analyze_voice_density
-)
-
-from speech_analyzer import (
-    transcribe_audio,
-    detect_text_issues
-)
+from PythonAnalysis.audio_analyser import extract_audio, analyze_speech_speed, detect_pauses, analyze_voice_density
+from PythonAnalysis.speech_analyser import transcribe_audio, detect_text_issues
+# from audio_analyzer import (
+#     extract_audio,
+#     analyze_speech_speed,
+#     detect_pauses,
+#     analyze_voice_density
+# )
+#
+# from speech_analyzer import (
+#     transcribe_audio,
+#     detect_text_issues
+# )
 
 from content_analyzer import analyze_content
 from gaze_analyzer import analyze_gaze

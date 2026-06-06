@@ -59,6 +59,7 @@ def analyze_video(video_path):
 
     face_count = 0
     eye_contact_count = 0
+    pose_count = 0
     gesture_count = 0
     posture_stable_count = 0
 
@@ -134,6 +135,9 @@ def analyze_video(video_path):
                     last_eye_event_time = current_time
 
             if pose_result.pose_landmarks:
+                if has_valid_pose(pose_result.pose_landmarks):
+                    pose_count += 1
+
                 if has_gesture(pose_result.pose_landmarks):
                     gesture_count += 1
 
@@ -171,9 +175,15 @@ def analyze_video(video_path):
         }
 
     face_detection_rate = face_count / analyzed_frames
-    eye_contact_rate = eye_contact_count / analyzed_frames
-    gesture_rate = gesture_count / analyzed_frames
-    posture_stability_rate = posture_stable_count / analyzed_frames
+    pose_detection_rate = pose_count / analyzed_frames
+
+    eye_contact_available = face_detection_rate >= 0.5
+    gesture_available = pose_detection_rate >= 0.3
+    posture_available = pose_detection_rate >= 0.3
+
+    eye_contact_rate = eye_contact_count / face_count if eye_contact_available and face_count > 0 else 0
+    gesture_rate = gesture_count / pose_count if gesture_available and pose_count > 0 else 0
+    posture_stability_rate = posture_stable_count / pose_count if posture_available and pose_count > 0 else 0
 
     return {
         "available": True,
@@ -182,12 +192,17 @@ def analyze_video(video_path):
         "analyzed_frames": analyzed_frames,
 
         "face_detection_rate": round(face_detection_rate, 3),
+        "pose_detection_rate": round(pose_detection_rate, 3),
+        "eye_contact_available": eye_contact_available,
+        "gesture_available": gesture_available,
+        "posture_available": posture_available,
         "eye_contact_rate": round(eye_contact_rate, 3),
         "gesture_rate": round(gesture_rate, 3),
         "posture_stability_rate": round(posture_stability_rate, 3),
 
         "summary": {
             "face_detection_percent": round(face_detection_rate * 100, 1),
+            "pose_detection_percent": round(pose_detection_rate * 100, 1),
             "eye_contact_percent": round(eye_contact_rate * 100, 1),
             "gesture_percent": round(gesture_rate * 100, 1),
             "posture_stability_percent": round(posture_stability_rate * 100, 1)
@@ -223,12 +238,23 @@ def has_gesture(pose_landmarks):
     left_hip = landmarks[23]
     right_hip = landmarks[24]
 
+    if left_hip.visibility < 0.5 or right_hip.visibility < 0.5:
+        return False
+
     hip_y = (left_hip.y + right_hip.y) / 2
 
-    left_hand_active = left_wrist.y < hip_y
-    right_hand_active = right_wrist.y < hip_y
+    left_hand_active = left_wrist.visibility >= 0.5 and left_wrist.y < hip_y
+    right_hand_active = right_wrist.visibility >= 0.5 and right_wrist.y < hip_y
 
     return left_hand_active or right_hand_active
+
+
+def has_valid_pose(pose_landmarks):
+    landmarks = pose_landmarks.landmark
+
+    required_indices = [11, 12, 23, 24]
+
+    return all(landmarks[index].visibility >= 0.5 for index in required_indices)
 
 
 def is_posture_stable(pose_landmarks):
@@ -236,6 +262,9 @@ def is_posture_stable(pose_landmarks):
 
     left_shoulder = landmarks[11]
     right_shoulder = landmarks[12]
+
+    if left_shoulder.visibility < 0.5 or right_shoulder.visibility < 0.5:
+        return False
 
     shoulder_tilt = abs(left_shoulder.y - right_shoulder.y)
 

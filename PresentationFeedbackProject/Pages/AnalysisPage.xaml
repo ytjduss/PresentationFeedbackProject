@@ -296,7 +296,7 @@
 
                     <Grid>
                         <StackPanel>
-                            <TextBlock Text="자세"
+                            <TextBlock Text="자세/손동작"
                                        FontWeight="Black"
                                        Foreground="{StaticResource BlackBrush}"/>
 

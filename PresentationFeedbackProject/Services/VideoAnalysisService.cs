@@ -165,10 +165,16 @@ namespace PresentationFeedbackUI.Services
 
                 TotalScore = totalScore,
 
+                Grade = GetString(feedback, "grade"),
                 OverallFeedback = BuildOverallFeedback(feedback),
                 SpeedFeedback = BuildSpeedFeedback(audio),
-                EyeContactFeedback = BuildPercentFeedback(video, "eye_contact_percent", "시선 처리"),
-                GestureFeedback = BuildPercentFeedback(video, "gesture_percent", "제스처 사용"),
+                EyeContactFeedback = BuildVisualMetricFeedback(
+                    video,
+                    "eye_contact_available",
+                    "eye_contact_percent",
+                    "시선 처리",
+                    "얼굴이 충분히 감지되지 않아 시선 평가는 제외되었습니다."),
+                GestureFeedback = BuildGesturePostureFeedback(video),
                 SilenceFeedback = BuildSilenceFeedback(audio),
                 ContentFeedback = BuildContentFeedback(feedback),
                 Transcript = GetString(audio, "transcript"),
@@ -214,17 +220,66 @@ namespace PresentationFeedbackUI.Services
             return $"발표 속도는 {wpm} WPM으로 빠른 편입니다.";
         }
 
-        private static string BuildPercentFeedback(JsonElement video, string propertyName, string label)
+        private static string BuildVisualMetricFeedback(
+            JsonElement video,
+            string availablePropertyName,
+            string percentPropertyName,
+            string label,
+            string unavailableMessage)
         {
             if (!GetBool(video, "available"))
             {
                 return $"영상 분석을 수행하지 못했습니다. {GetString(video, "error")}".Trim();
             }
 
+            if (!GetBool(video, availablePropertyName))
+            {
+                return unavailableMessage;
+            }
+
             JsonElement summary = GetObject(video, "summary");
-            double percent = GetDouble(summary, propertyName);
+            double percent = GetDouble(summary, percentPropertyName);
 
             return $"{label} 비율은 {percent:0.0}%입니다.";
+        }
+
+        private static string BuildGesturePostureFeedback(JsonElement video)
+        {
+            if (!GetBool(video, "available"))
+            {
+                return $"영상 분석을 수행하지 못했습니다. {GetString(video, "error")}".Trim();
+            }
+
+            bool gestureAvailable = GetBool(video, "gesture_available");
+            bool postureAvailable = GetBool(video, "posture_available");
+
+            if (!gestureAvailable && !postureAvailable)
+            {
+                return "상체 관절이 충분히 감지되지 않아 손동작과 자세 평가는 제외되었습니다.";
+            }
+
+            JsonElement summary = GetObject(video, "summary");
+            List<string> feedbackParts = new List<string>();
+
+            if (gestureAvailable)
+            {
+                feedbackParts.Add($"제스처 사용 비율은 {GetDouble(summary, "gesture_percent"):0.0}%입니다.");
+            }
+            else
+            {
+                feedbackParts.Add("손동작 평가는 제외되었습니다.");
+            }
+
+            if (postureAvailable)
+            {
+                feedbackParts.Add($"자세 안정 비율은 {GetDouble(summary, "posture_stability_percent"):0.0}%입니다.");
+            }
+            else
+            {
+                feedbackParts.Add("자세 평가는 제외되었습니다.");
+            }
+
+            return string.Join(" ", feedbackParts);
         }
 
         private static string BuildSilenceFeedback(JsonElement audio)

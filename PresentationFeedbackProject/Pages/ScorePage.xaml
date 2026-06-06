@@ -35,7 +35,7 @@
                          StrokeStartLineCap="Round"
                          StrokeEndLineCap="Round"/>
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock Text="86"
+                    <TextBlock Text="{Binding TotalScoreText}"
                                Foreground="{StaticResource BlackBrush}"
                                FontSize="82"
                                FontWeight="Black"
@@ -53,7 +53,7 @@
                     Padding="20,8"
                     HorizontalAlignment="Left"
                     Margin="173,-20,0,0">
-                <TextBlock Text="★ GOOD"
+                <TextBlock Text="{Binding GradeBadgeText}"
                            Foreground="{StaticResource WhiteBrush}"
                            FontSize="18"
                            FontWeight="Black"/>
@@ -68,13 +68,42 @@
                     <TextBlock Text="ʕ•ᴥ•ʔ"
                                FontSize="34"
                                Margin="0,0,18,0"/>
-                    <TextBlock Text="전체적으로 안정적인 발표였어요! 특히 자세와 시선 처리가 매우 좋았습니다."
+                    <TextBlock Text="{Binding OverallFeedback}"
            FontSize="11"
            FontWeight="SemiBold"
            Width="336"
       
            TextWrapping="Wrap"/>
                 </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource Card}"
+                    Width="470"
+                    Height="180"
+                    Padding="20"
+                    Margin="0,18,0,0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="26"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Text="발표 대본"
+                               Foreground="{StaticResource BlackBrush}"
+                               FontSize="16"
+                               FontWeight="Black"/>
+
+                    <ScrollViewer Grid.Row="1"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <TextBlock Text="{Binding Transcript}"
+                                   Foreground="{StaticResource TextGrayBrush}"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   LineHeight="18"
+                                   TextWrapping="Wrap"/>
+                    </ScrollViewer>
+                </Grid>
             </Border>
         </StackPanel>
 
@@ -100,11 +129,18 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="70"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="말 빠르기" FontWeight="SemiBold"/>
+                    <StackPanel>
+                        <TextBlock Text="말 빠르기" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding WpmText}"
+                                   Foreground="{StaticResource TextGrayBrush}"
+                                   FontSize="11"
+                                   FontWeight="SemiBold"
+                                   Margin="0,2,0,0"/>
+                    </StackPanel>
                     <Border Grid.Column="1" Height="9" Background="#E5E5E5" CornerRadius="5" VerticalAlignment="Center">
-                        <Border Background="{StaticResource MintBrush}" Width="235" CornerRadius="5" HorizontalAlignment="Left"/>
+                        <Border Background="{StaticResource MintBrush}" Width="{Binding SpeechRateBarWidth}" CornerRadius="5" HorizontalAlignment="Left"/>
                     </Border>
-                    <TextBlock Grid.Column="2" Text="82 /100" FontWeight="Black" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="2" Text="{Binding SpeechRateScoreText}" FontWeight="Black" HorizontalAlignment="Right"/>
                 </Grid>
 
                 <Grid Margin="0,0,0,18">
@@ -115,9 +151,9 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="시선 처리" FontWeight="SemiBold"/>
                     <Border Grid.Column="1" Height="9" Background="#E5E5E5" CornerRadius="5" VerticalAlignment="Center">
-                        <Border Background="{StaticResource MintBrush}" Width="255" CornerRadius="5" HorizontalAlignment="Left"/>
+                        <Border Background="{StaticResource MintBrush}" Width="{Binding EyeContactBarWidth}" CornerRadius="5" HorizontalAlignment="Left"/>
                     </Border>
-                    <TextBlock Grid.Column="2" Text="88 /100" FontWeight="Black" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="2" Text="{Binding EyeContactScoreText}" FontWeight="Black" HorizontalAlignment="Right"/>
                 </Grid>
 
                 <Grid Margin="0,0,0,18">
@@ -126,11 +162,11 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="70"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="손동작" FontWeight="SemiBold"/>
+                    <TextBlock Text="자세/손동작" FontWeight="SemiBold"/>
                     <Border Grid.Column="1" Height="9" Background="#E5E5E5" CornerRadius="5" VerticalAlignment="Center">
-                        <Border Background="{StaticResource MintBrush}" Width="210" CornerRadius="5" HorizontalAlignment="Left"/>
+                        <Border Background="{StaticResource MintBrush}" Width="{Binding GestureBarWidth}" CornerRadius="5" HorizontalAlignment="Left"/>
                     </Border>
-                    <TextBlock Grid.Column="2" Text="74 /100" FontWeight="Black" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="2" Text="{Binding GestureScoreText}" FontWeight="Black" HorizontalAlignment="Right"/>
                 </Grid>
 
                 <Grid Margin="0,0,0,18">
@@ -141,9 +177,9 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="침묵 구간" FontWeight="SemiBold"/>
                     <Border Grid.Column="1" Height="9" Background="#E5E5E5" CornerRadius="5" VerticalAlignment="Center">
-                        <Border Background="{StaticResource MintBrush}" Width="265" CornerRadius="5" HorizontalAlignment="Left"/>
+                        <Border Background="{StaticResource MintBrush}" Width="{Binding SilenceBarWidth}" CornerRadius="5" HorizontalAlignment="Left"/>
                     </Border>
-                    <TextBlock Grid.Column="2" Text="90 /100" FontWeight="Black" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="2" Text="{Binding SilenceScoreText}" FontWeight="Black" HorizontalAlignment="Right"/>
                 </Grid>
 
                 <Grid>
@@ -154,9 +190,9 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="내용" FontWeight="SemiBold"/>
                     <Border Grid.Column="1" Height="9" Background="#E5E5E5" CornerRadius="5" VerticalAlignment="Center">
-                        <Border Background="{StaticResource MintBrush}" Width="245" CornerRadius="5" HorizontalAlignment="Left"/>
+                        <Border Background="{StaticResource MintBrush}" Width="{Binding ContentBarWidth}" CornerRadius="5" HorizontalAlignment="Left"/>
                     </Border>
-                    <TextBlock Grid.Column="2" Text="85 /100" FontWeight="Black" HorizontalAlignment="Right"/>
+                    <TextBlock Grid.Column="2" Text="{Binding ContentScoreText}" FontWeight="Black" HorizontalAlignment="Right"/>
                 </Grid>
             </StackPanel>
         </Border>

@@ -21,8 +21,21 @@ def run(video_path, model_name="base"):
             "error": f"영상 파일을 찾을 수 없습니다: {video_path}"
         }
 
-    video_result = analyze_video(video_path)
-    audio_result = analyze_audio(video_path, model_name)
+    try:
+        video_result = analyze_video(video_path)
+    except Exception as e:
+        video_result = {
+            "available": False,
+            "error": f"영상 분석 실패: {e}"
+        }
+
+    try:
+        audio_result = analyze_audio(video_path, model_name)
+    except Exception as e:
+        audio_result = {
+            "available": False,
+            "error": f"음성 분석 실패: {e}"
+        }
 
     if not video_result.get("available") and not audio_result.get("available"):
         return {

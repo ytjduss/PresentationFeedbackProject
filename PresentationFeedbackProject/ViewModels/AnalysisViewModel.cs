@@ -20,6 +20,11 @@ namespace PresentationFeedbackUI.ViewModels
 
         public int Wpm => result.Wpm;
 
+        public string Grade => string.IsNullOrWhiteSpace(result.Grade)
+            ? "평가 없음"
+            : result.Grade;
+        public string GradeBadgeText => $"★ {Grade}";
+
         public string TotalScoreText => $"{TotalScore}";
         public string SpeechRateScoreText => $"{SpeechRateScore} /100";
         public string EyeContactScoreText => $"{EyeContactScore} /100";
@@ -59,6 +64,8 @@ namespace PresentationFeedbackUI.ViewModels
             OnPropertyChanged(nameof(SilenceScore));
             OnPropertyChanged(nameof(ContentScore));
             OnPropertyChanged(nameof(Wpm));
+            OnPropertyChanged(nameof(Grade));
+            OnPropertyChanged(nameof(GradeBadgeText));
 
             OnPropertyChanged(nameof(TotalScoreText));
             OnPropertyChanged(nameof(SpeechRateScoreText));

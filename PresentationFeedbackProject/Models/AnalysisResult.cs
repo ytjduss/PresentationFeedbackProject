@@ -12,6 +12,8 @@
 
         public int Wpm { get; set; }
 
+        public string Grade { get; set; } = "";
+
         public string OverallFeedback { get; set; } = "";
         public string SpeedFeedback { get; set; } = "";
         public string EyeContactFeedback { get; set; } = "";

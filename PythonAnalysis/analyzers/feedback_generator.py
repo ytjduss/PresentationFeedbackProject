@@ -19,6 +19,9 @@ def generate_feedback(video, audio):
     eye_rate = video.get("eye_contact_rate", 0)
     gesture_rate = video.get("gesture_rate", 0)
     posture_rate = video.get("posture_stability_rate", 0)
+    eye_available = video.get("eye_contact_available", False)
+    gesture_available = video.get("gesture_available", False)
+    posture_available = video.get("posture_available", False)
 
     speech_rate = audio.get("speech_rate_wpm", 0)
     filler_count = audio.get("filler_count", 0)
@@ -27,19 +30,25 @@ def generate_feedback(video, audio):
     if not video_available:
         improvements.append("영상 분석을 수행하지 못해 시선, 제스처, 자세 평가는 제외되었습니다.")
     else:
-        if eye_rate >= 0.6:
+        if not eye_available:
+            improvements.append("얼굴이 충분히 감지되지 않아 시선 평가는 제외되었습니다.")
+        elif eye_rate >= 0.6:
             strengths.append("시선 처리가 안정적입니다.")
         else:
             improvements.append("카메라나 청중을 바라보는 시간이 부족합니다.")
 
-        if 0.2 <= gesture_rate <= 0.7:
+        if not gesture_available:
+            improvements.append("상체 관절이 충분히 감지되지 않아 손동작 평가는 제외되었습니다.")
+        elif 0.2 <= gesture_rate <= 0.7:
             strengths.append("제스처 사용이 자연스럽습니다.")
         elif gesture_rate < 0.2:
             improvements.append("손동작이 부족해 발표가 다소 정적으로 보일 수 있습니다.")
         else:
             improvements.append("제스처가 많아 발표가 산만해 보일 수 있습니다.")
 
-        if posture_rate >= 0.6:
+        if not posture_available:
+            improvements.append("상체 관절이 충분히 감지되지 않아 자세 평가는 제외되었습니다.")
+        elif posture_rate >= 0.6:
             strengths.append("자세가 비교적 안정적입니다.")
         else:
             improvements.append("어깨 기울기나 자세 흔들림이 감지되었습니다.")
@@ -74,7 +83,7 @@ def generate_feedback(video, audio):
     }
 
 def score_eye_contact(video):
-    if not video.get("available", False):
+    if not video.get("available", False) or not video.get("eye_contact_available", False):
         return 0
 
     rate = video.get("eye_contact_rate", 0)
@@ -88,7 +97,7 @@ def score_eye_contact(video):
     return 6
 
 def score_gesture(video):
-    if not video.get("available", False):
+    if not video.get("available", False) or not video.get("gesture_available", False):
         return 0
 
     rate = video.get("gesture_rate", 0)
@@ -100,7 +109,7 @@ def score_gesture(video):
     return 7
 
 def score_posture(video):
-    if not video.get("available", False):
+    if not video.get("available", False) or not video.get("posture_available", False):
         return 0
 
     rate = video.get("posture_stability_rate", 0)

@@ -6,6 +6,11 @@ from PythonAnalysis.analyzers.audio_analyzer import analyze_audio
 from PythonAnalysis.analyzers.feedback_generator import generate_feedback
 from PythonAnalysis.analyzers.video_analyzer import analyze_video
 
+import sys
+import io
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
 
 def run(video_path, model_name="base"):
     video_file = Path(video_path)

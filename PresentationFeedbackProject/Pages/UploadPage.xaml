@@ -168,29 +168,29 @@
                                FontWeight="Black"
                                Margin="0,0,0,18"/>
 
-                    <TextBlock Text="◉  말 빠르기 (SPEED)"
+                    <TextBlock Text="◉  말 빠르기"
                                FontSize="14"
                                FontWeight="SemiBold"
                                Margin="0,0,0,14"/>
 
-                    <TextBlock Text="◉  시선 처리 (EYE CONTACT)"
+                    <TextBlock Text="◉  시선 처리"
                                FontSize="14"
                                FontWeight="SemiBold"
                                Margin="0,0,0,14"/>
 
-                    <TextBlock Text="◉  손동작 (GESTURE)"
+                    <TextBlock Text="◉  손동작"
                                FontSize="14"
                                FontWeight="SemiBold"
                                Margin="0,0,0,14"/>
 
-                    <TextBlock Text="◉  침묵 구간 (SILENCE)"
+                    <TextBlock Text="◉  침묵 구간"
                                FontSize="14"
                                FontWeight="SemiBold"
                                Margin="0,0,0,14"/>
 
-                    <TextBlock Text="◉  발표 내용 (CONTENT)"
+                    <!--<TextBlock Text="◉  발표 내용 (CONTENT)"
                                FontSize="14"
-                               FontWeight="SemiBold"/>
+                               FontWeight="SemiBold"/>-->
                 </StackPanel>
             </Border>
 

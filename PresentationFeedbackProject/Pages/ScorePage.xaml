@@ -52,7 +52,7 @@
                     CornerRadius="18"
                     Padding="20,8"
                     HorizontalAlignment="Left"
-                    Margin="235,-20,0,0">
+                    Margin="173,-20,0,0">
                 <TextBlock Text="★ GOOD"
                            Foreground="{StaticResource WhiteBrush}"
                            FontSize="18"
@@ -60,7 +60,7 @@
             </Border>
 
             <Border Style="{StaticResource Card}"
-                    Width="552"
+                    Width="470"
                   
                     Padding="20"
                     Margin="0,40,0,0">
@@ -71,7 +71,7 @@
                     <TextBlock Text="전체적으로 안정적인 발표였어요! 특히 자세와 시선 처리가 매우 좋았습니다."
            FontSize="11"
            FontWeight="SemiBold"
-           Width="376"
+           Width="336"
       
            TextWrapping="Wrap"/>
                 </StackPanel>

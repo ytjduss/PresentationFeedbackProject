@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import json
 
 from PythonAnalysis.main_analysis import run
 
@@ -16,4 +17,5 @@ if __name__ == "__main__":
 
     video_file = sys.argv[1]
     model_name = sys.argv[2] if len(sys.argv) >= 3 else "small"
-    run(video_file, model_name)
+    result = run(video_file, model_name)
+    print(json.dumps(result, ensure_ascii=False, indent=2))

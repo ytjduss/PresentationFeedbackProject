@@ -20,23 +20,13 @@ namespace PresentationFeedbackUI.Services
 
             string projectRoot = FindProjectRoot();
             string scriptPath = Path.Combine(projectRoot, "main_analysis.py");
-            string outputPath = Path.Combine(
-                projectRoot,
-                "PythonAnalysis",
-                "output",
-                $"{Path.GetFileNameWithoutExtension(videoPath)}_final_analysis.json");
 
             if (!File.Exists(scriptPath))
             {
                 throw new FileNotFoundException("Python 분석 스크립트를 찾을 수 없습니다.", scriptPath);
             }
 
-            if (File.Exists(outputPath))
-            {
-                File.Delete(outputPath);
-            }
-
-            string pythonExe = Environment.GetEnvironmentVariable("PYTHON_EXE") ?? "python";
+            string pythonExe = FindPythonExecutable(projectRoot);
 
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
@@ -71,12 +61,14 @@ namespace PresentationFeedbackUI.Services
                     $"Python 분석이 실패했습니다.\n\nSTDOUT:\n{stdout}\n\nSTDERR:\n{stderr}");
             }
 
-            if (!File.Exists(outputPath))
+            string json = ExtractJson(stdout);
+
+            if (string.IsNullOrWhiteSpace(json))
             {
-                throw new FileNotFoundException("Python 분석 결과 JSON을 찾을 수 없습니다.", outputPath);
+                throw new InvalidOperationException(
+                    $"Python 분석 결과 JSON을 읽지 못했습니다.\n\nSTDOUT:\n{stdout}\n\nSTDERR:\n{stderr}");
             }
 
-            string json = await File.ReadAllTextAsync(outputPath, Encoding.UTF8);
             return ConvertToAnalysisResult(json, videoPath);
         }
 
@@ -98,26 +90,68 @@ namespace PresentationFeedbackUI.Services
             throw new DirectoryNotFoundException("프로젝트 루트 폴더를 찾을 수 없습니다.");
         }
 
+        private static string FindPythonExecutable(string projectRoot)
+        {
+            string? configuredPython = Environment.GetEnvironmentVariable("PYTHON_EXE");
+
+            if (!string.IsNullOrWhiteSpace(configuredPython) && File.Exists(configuredPython))
+            {
+                return configuredPython;
+            }
+
+            string windowsVenvPython = Path.Combine(projectRoot, ".venv", "Scripts", "python.exe");
+
+            if (File.Exists(windowsVenvPython))
+            {
+                return windowsVenvPython;
+            }
+
+            string unixVenvPython = Path.Combine(projectRoot, ".venv", "bin", "python");
+
+            if (File.Exists(unixVenvPython))
+            {
+                return unixVenvPython;
+            }
+
+            return "python";
+        }
+
+        private static string ExtractJson(string text)
+        {
+            int start = text.IndexOf('{');
+            int end = text.LastIndexOf('}');
+
+            if (start < 0 || end < start)
+            {
+                return "";
+            }
+
+            return text[start..(end + 1)];
+        }
+
         private static AnalysisResult ConvertToAnalysisResult(string json, string videoPath)
         {
             using JsonDocument document = JsonDocument.Parse(json);
             JsonElement root = document.RootElement;
-            JsonElement summary = root.GetProperty("summary");
 
-            JsonElement speechSpeed = summary.GetProperty("speechSpeed");
-            JsonElement gaze = summary.GetProperty("gaze");
-            JsonElement gesture = summary.GetProperty("gesture");
-            JsonElement content = summary.GetProperty("content");
+            if (root.TryGetProperty("success", out JsonElement success)
+                && success.ValueKind == JsonValueKind.False)
+            {
+                throw new InvalidOperationException(GetString(root, "error"));
+            }
 
-            int wpm = GetRoundedInt(speechSpeed, "wordsPerMinute");
-            int speechRateScore = CalculateSpeechRateScore(GetDouble(speechSpeed, "syllablesPerSec"));
-            int eyeContactScore = ClampScore(GetDouble(gaze, "frontRatio") * 100);
-            int gestureScore = ClampScore(GetDouble(gesture, "movementScore") / 25 * 100);
-            int silenceScore = CalculateSilenceScore(
-                GetInt(summary, "pauseCount"),
-                GetInt(summary, "hesitationCount"));
-            int contentScore = CalculateContentScore(content);
-            int totalScore = (speechRateScore + eyeContactScore + gestureScore + silenceScore + contentScore) / 5;
+            JsonElement video = GetObject(root, "video");
+            JsonElement audio = GetObject(root, "audio");
+            JsonElement feedback = GetObject(root, "feedback");
+            JsonElement scores = GetObject(feedback, "scores");
+
+            int totalScore = GetInt(feedback, "total_score");
+            int speechRateScore = ScaleScore(GetInt(scores, "speech_rate"), 20);
+            int eyeContactScore = ScaleScore(GetInt(scores, "eye_contact"), 20);
+            int gestureScore = ScaleScore(GetInt(scores, "gesture"), 15);
+            int silenceScore = ScaleScore(GetInt(scores, "silence"), 15);
+            int contentScore = (ScaleScore(GetInt(scores, "posture"), 15) + ScaleScore(GetInt(scores, "filler"), 15)) / 2;
+            int wpm = GetRoundedInt(audio, "speech_rate_wpm");
 
             return new AnalysisResult
             {
@@ -131,97 +165,169 @@ namespace PresentationFeedbackUI.Services
 
                 TotalScore = totalScore,
 
-                OverallFeedback = GetString(summary, "overallFeedback"),
-                SpeedFeedback = GetString(speechSpeed, "feedback"),
-                EyeContactFeedback = GetString(gaze, "feedback"),
-                GestureFeedback = GetString(gesture, "feedback"),
-                SilenceFeedback = BuildSilenceFeedback(summary),
-                ContentFeedback = GetString(content, "contentFeedback"),
+                OverallFeedback = BuildOverallFeedback(feedback),
+                SpeedFeedback = BuildSpeedFeedback(audio),
+                EyeContactFeedback = BuildPercentFeedback(video, "eye_contact_percent", "시선 처리"),
+                GestureFeedback = BuildPercentFeedback(video, "gesture_percent", "제스처 사용"),
+                SilenceFeedback = BuildSilenceFeedback(audio),
+                ContentFeedback = BuildContentFeedback(feedback),
+                Transcript = GetString(audio, "transcript"),
 
                 PresentationTopic = Path.GetFileNameWithoutExtension(videoPath),
-                MainKeywords = BuildKeywordText(content),
-                ContentImprovement = $"{GetString(content, "lengthFeedback")} {GetString(content, "clarityFeedback")}".Trim()
+                MainKeywords = BuildFillerText(audio),
+                ContentImprovement = JoinStringArray(feedback, "improvements")
             };
         }
 
-        private static int CalculateSpeechRateScore(double syllablesPerSec)
+        private static string BuildOverallFeedback(JsonElement feedback)
         {
-            if (syllablesPerSec <= 0)
+            string oneLine = GetString(feedback, "one_line_feedback");
+            string improvements = JoinStringArray(feedback, "improvements");
+
+            if (string.IsNullOrWhiteSpace(improvements))
             {
-                return 0;
+                return oneLine;
             }
 
-            if (syllablesPerSec >= 2.5 && syllablesPerSec <= 4.0)
+            return $"{oneLine} 보완점: {improvements}";
+        }
+
+        private static string BuildSpeedFeedback(JsonElement audio)
+        {
+            if (!GetBool(audio, "available"))
             {
-                return 100;
+                return $"음성 분석을 수행하지 못했습니다. {GetString(audio, "error")}".Trim();
             }
 
-            double distance = syllablesPerSec < 2.5
-                ? 2.5 - syllablesPerSec
-                : syllablesPerSec - 4.0;
+            int wpm = GetRoundedInt(audio, "speech_rate_wpm");
 
-            return ClampScore(100 - distance * 25);
-        }
-
-        private static int CalculateSilenceScore(int pauseCount, int hesitationCount)
-        {
-            return ClampScore(100 - pauseCount * 8 - hesitationCount * 3);
-        }
-
-        private static int CalculateContentScore(JsonElement content)
-        {
-            string lengthLabel = GetString(content, "lengthLabel");
-            double avgWordsPerSentence = GetDouble(content, "avgWordsPerSentence");
-
-            int score = lengthLabel == "적절" ? 90 : 72;
-
-            if (avgWordsPerSentence > 25)
+            if (wpm >= 120 && wpm <= 170)
             {
-                score -= 12;
+                return $"발표 속도는 {wpm} WPM으로 적절한 편입니다.";
             }
 
-            return ClampScore(score);
-        }
-
-        private static string BuildSilenceFeedback(JsonElement summary)
-        {
-            int pauseCount = GetInt(summary, "pauseCount");
-            int hesitationCount = GetInt(summary, "hesitationCount");
-
-            if (pauseCount == 0 && hesitationCount == 0)
+            if (wpm < 120)
             {
-                return "침묵 구간과 발화 끊김이 적어 발표 흐름이 안정적입니다.";
+                return $"발표 속도는 {wpm} WPM으로 느린 편입니다.";
             }
 
-            return $"긴 침묵 {pauseCount}회, 짧은 발화 끊김 {hesitationCount}회가 감지되었습니다.";
+            return $"발표 속도는 {wpm} WPM으로 빠른 편입니다.";
         }
 
-        private static string BuildKeywordText(JsonElement content)
+        private static string BuildPercentFeedback(JsonElement video, string propertyName, string label)
         {
-            if (!content.TryGetProperty("keywords", out JsonElement keywords)
-                || keywords.ValueKind != JsonValueKind.Array)
+            if (!GetBool(video, "available"))
+            {
+                return $"영상 분석을 수행하지 못했습니다. {GetString(video, "error")}".Trim();
+            }
+
+            JsonElement summary = GetObject(video, "summary");
+            double percent = GetDouble(summary, propertyName);
+
+            return $"{label} 비율은 {percent:0.0}%입니다.";
+        }
+
+        private static string BuildSilenceFeedback(JsonElement audio)
+        {
+            if (!GetBool(audio, "available"))
+            {
+                return $"침묵 구간을 분석하지 못했습니다. {GetString(audio, "error")}".Trim();
+            }
+
+            JsonElement silence = GetObject(audio, "silence");
+            int count = GetInt(silence, "silence_count");
+            double totalSec = GetDouble(silence, "total_silence_sec");
+
+            if (count == 0)
+            {
+                return "긴 침묵 구간이 거의 감지되지 않았습니다.";
+            }
+
+            return $"긴 침묵 {count}회, 총 {totalSec:0.0}초가 감지되었습니다.";
+        }
+
+        private static string BuildContentFeedback(JsonElement feedback)
+        {
+            string strengths = JoinStringArray(feedback, "strengths");
+
+            if (string.IsNullOrWhiteSpace(strengths))
+            {
+                return GetString(feedback, "one_line_feedback");
+            }
+
+            return strengths;
+        }
+
+        private static string BuildFillerText(JsonElement audio)
+        {
+            JsonElement detail = GetObject(audio, "filler_detail");
+            List<string> fillers = new List<string>();
+
+            if (detail.ValueKind != JsonValueKind.Object)
+            {
+                return "감지된 주요 습관어 없음";
+            }
+
+            foreach (JsonProperty property in detail.EnumerateObject())
+            {
+                fillers.Add($"{property.Name} {GetInt(detail, property.Name)}회");
+            }
+
+            if (fillers.Count == 0)
+            {
+                return "감지된 주요 습관어 없음";
+            }
+
+            return string.Join(", ", fillers);
+        }
+
+        private static string JoinStringArray(JsonElement element, string propertyName)
+        {
+            if (element.ValueKind != JsonValueKind.Object
+                || !element.TryGetProperty(propertyName, out JsonElement property)
+                || property.ValueKind != JsonValueKind.Array)
             {
                 return "";
             }
 
-            List<string> keywordTexts = new List<string>();
+            List<string> values = new List<string>();
 
-            foreach (JsonElement keyword in keywords.EnumerateArray())
+            foreach (JsonElement item in property.EnumerateArray())
             {
-                string text = GetString(keyword, "keyword");
-
-                if (!string.IsNullOrWhiteSpace(text))
+                if (item.ValueKind == JsonValueKind.String)
                 {
-                    keywordTexts.Add(text);
+                    string? value = item.GetString();
+
+                    if (!string.IsNullOrWhiteSpace(value))
+                    {
+                        values.Add(value);
+                    }
                 }
             }
 
-            return string.Join(", ", keywordTexts);
+            return string.Join(" ", values);
+        }
+
+        private static JsonElement GetObject(JsonElement element, string propertyName)
+        {
+            return element.ValueKind == JsonValueKind.Object
+                && element.TryGetProperty(propertyName, out JsonElement property)
+                && property.ValueKind == JsonValueKind.Object
+                    ? property
+                    : default;
+        }
+
+        private static bool GetBool(JsonElement element, string propertyName)
+        {
+            return element.ValueKind == JsonValueKind.Object
+                && element.TryGetProperty(propertyName, out JsonElement property)
+                && property.ValueKind == JsonValueKind.True;
         }
 
         private static int GetInt(JsonElement element, string propertyName)
         {
-            return element.TryGetProperty(propertyName, out JsonElement property)
+            return element.ValueKind == JsonValueKind.Object
+                && element.TryGetProperty(propertyName, out JsonElement property)
                 && property.TryGetInt32(out int value)
                     ? value
                     : 0;
@@ -234,7 +340,8 @@ namespace PresentationFeedbackUI.Services
 
         private static double GetDouble(JsonElement element, string propertyName)
         {
-            return element.TryGetProperty(propertyName, out JsonElement property)
+            return element.ValueKind == JsonValueKind.Object
+                && element.TryGetProperty(propertyName, out JsonElement property)
                 && property.TryGetDouble(out double value)
                     ? value
                     : 0;
@@ -242,15 +349,21 @@ namespace PresentationFeedbackUI.Services
 
         private static string GetString(JsonElement element, string propertyName)
         {
-            return element.TryGetProperty(propertyName, out JsonElement property)
+            return element.ValueKind == JsonValueKind.Object
+                && element.TryGetProperty(propertyName, out JsonElement property)
                 && property.ValueKind == JsonValueKind.String
                     ? property.GetString() ?? ""
                     : "";
         }
 
-        private static int ClampScore(double value)
+        private static int ScaleScore(int value, int max)
         {
-            return Math.Clamp((int)Math.Round(value), 0, 100);
+            if (max <= 0)
+            {
+                return 0;
+            }
+
+            return Math.Clamp((int)Math.Round(value / (double)max * 100), 0, 100);
         }
     }
 }

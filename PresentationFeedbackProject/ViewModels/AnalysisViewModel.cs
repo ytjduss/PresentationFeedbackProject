@@ -34,6 +34,9 @@ namespace PresentationFeedbackUI.ViewModels
         public string GestureFeedback => result.GestureFeedback;
         public string SilenceFeedback => result.SilenceFeedback;
         public string ContentFeedback => result.ContentFeedback;
+        public string Transcript => string.IsNullOrWhiteSpace(result.Transcript)
+            ? "분석된 발표 대본이 없습니다."
+            : result.Transcript;
 
         public string PresentationTopic => result.PresentationTopic;
         public string MainKeywords => result.MainKeywords;
@@ -71,6 +74,7 @@ namespace PresentationFeedbackUI.ViewModels
             OnPropertyChanged(nameof(GestureFeedback));
             OnPropertyChanged(nameof(SilenceFeedback));
             OnPropertyChanged(nameof(ContentFeedback));
+            OnPropertyChanged(nameof(Transcript));
 
             OnPropertyChanged(nameof(PresentationTopic));
             OnPropertyChanged(nameof(MainKeywords));

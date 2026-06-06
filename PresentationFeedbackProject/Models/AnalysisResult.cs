@@ -18,6 +18,7 @@
         public string GestureFeedback { get; set; } = "";
         public string SilenceFeedback { get; set; } = "";
         public string ContentFeedback { get; set; } = "";
+        public string Transcript { get; set; } = "";
 
         public string PresentationTopic { get; set; } = "";
         public string MainKeywords { get; set; } = "";

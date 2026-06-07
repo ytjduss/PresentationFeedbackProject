@@ -15,7 +15,7 @@ The setup script creates `.venv`, installs Python packages from `requirements.tx
 - Windows
 - Python 3.11 or 3.12
 - .NET 8 SDK
-- ffmpeg
+- ffmpeg, or the `imageio-ffmpeg` package installed by `requirements.txt`
 
 ## Manual Commands
 

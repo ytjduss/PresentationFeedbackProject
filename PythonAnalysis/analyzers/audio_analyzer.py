@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 import wave
 import tempfile
 import subprocess
@@ -51,8 +52,10 @@ def analyze_audio(video_path, model_name="base"):
         }
 
 def extract_audio(video_path, wav_path):
+    ffmpeg_exe = find_ffmpeg_executable()
+
     command = [
-        "ffmpeg",
+        ffmpeg_exe,
         "-y",
         "-i", video_path,
         "-ac", "1",
@@ -69,7 +72,23 @@ def extract_audio(video_path, wav_path):
     )
 
     if result.returncode != 0:
-        raise RuntimeError("ffmpeg 음성 추출 실패")
+        error = result.stderr.strip()
+        if len(error) > 800:
+            error = error[-800:]
+
+        raise RuntimeError(f"ffmpeg 음성 추출 실패: {error}")
+
+def find_ffmpeg_executable():
+    ffmpeg_path = shutil.which("ffmpeg")
+
+    if ffmpeg_path:
+        return ffmpeg_path
+
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception as e:
+        raise RuntimeError(f"ffmpeg 실행 파일을 찾을 수 없습니다: {e}")
 
 def transcribe_audio(wav_path, model_name="base"):
     model = whisper.load_model(model_name)

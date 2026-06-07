@@ -3,5 +3,4 @@ numpy
 pydub
 opencv-python
 mediapipe
-
-# ffmpeg is also required, but it is installed separately from pip.
+imageio-ffmpeg

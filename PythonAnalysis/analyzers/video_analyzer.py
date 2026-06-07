@@ -1,5 +1,6 @@
 import cv2
 import mediapipe as mp
+import math
 
 
 TIMELINE_STYLE = {
@@ -62,6 +63,9 @@ def analyze_video(video_path):
     pose_count = 0
     gesture_count = 0
     posture_stable_count = 0
+
+    previous_hand_center = None
+    previous_body_center = None
 
     fps = cap.get(cv2.CAP_PROP_FPS)
 
@@ -135,10 +139,15 @@ def analyze_video(video_path):
                     last_eye_event_time = current_time
 
             if pose_result.pose_landmarks:
-                if has_valid_pose(pose_result.pose_landmarks):
+                valid_pose = has_valid_pose(pose_result.pose_landmarks)
+
+                if valid_pose:
                     pose_count += 1
 
-                if has_gesture(pose_result.pose_landmarks):
+                current_hand_center = get_hand_center(pose_result.pose_landmarks)
+                current_body_center = get_body_center(pose_result.pose_landmarks)
+
+                if has_gesture(pose_result.pose_landmarks, previous_hand_center):
                     gesture_count += 1
 
                     if current_time - last_gesture_event_time >= event_gap:
@@ -152,7 +161,7 @@ def analyze_video(video_path):
                         )
                         last_gesture_event_time = current_time
 
-                if is_posture_stable(pose_result.pose_landmarks):
+                if is_posture_stable(pose_result.pose_landmarks, previous_body_center):
                     posture_stable_count += 1
                 else:
                     if current_time - last_posture_event_time >= event_gap:
@@ -165,6 +174,12 @@ def analyze_video(video_path):
                             )
                         )
                         last_posture_event_time = current_time
+
+                if current_hand_center is not None:
+                    previous_hand_center = current_hand_center
+
+                if current_body_center is not None:
+                    previous_body_center = current_body_center
 
     cap.release()
 
@@ -230,7 +245,7 @@ def is_looking_forward(face_landmarks):
     return offset < 0.12
 
 
-def has_gesture(pose_landmarks):
+def has_gesture(pose_landmarks, previous_hand_center=None):
     landmarks = pose_landmarks.landmark
 
     left_wrist = landmarks[15]
@@ -246,7 +261,13 @@ def has_gesture(pose_landmarks):
     left_hand_active = left_wrist.visibility >= 0.5 and left_wrist.y < hip_y
     right_hand_active = right_wrist.visibility >= 0.5 and right_wrist.y < hip_y
 
-    return left_hand_active or right_hand_active
+    if not left_hand_active and not right_hand_active:
+        return False
+
+    current_hand_center = get_hand_center(pose_landmarks)
+    movement = calculate_movement(current_hand_center, previous_hand_center)
+
+    return movement >= 0.025
 
 
 def has_valid_pose(pose_landmarks):
@@ -257,7 +278,55 @@ def has_valid_pose(pose_landmarks):
     return all(landmarks[index].visibility >= 0.5 for index in required_indices)
 
 
-def is_posture_stable(pose_landmarks):
+def get_hand_center(pose_landmarks):
+    landmarks = pose_landmarks.landmark
+    wrists = []
+
+    for index in [15, 16]:
+        wrist = landmarks[index]
+
+        if wrist.visibility >= 0.5:
+            wrists.append((wrist.x, wrist.y))
+
+    if not wrists:
+        return None
+
+    x = sum(point[0] for point in wrists) / len(wrists)
+    y = sum(point[1] for point in wrists) / len(wrists)
+
+    return x, y
+
+
+def get_body_center(pose_landmarks):
+    landmarks = pose_landmarks.landmark
+    required_indices = [11, 12, 23, 24]
+    points = []
+
+    for index in required_indices:
+        landmark = landmarks[index]
+
+        if landmark.visibility < 0.5:
+            return None
+
+        points.append((landmark.x, landmark.y))
+
+    x = sum(point[0] for point in points) / len(points)
+    y = sum(point[1] for point in points) / len(points)
+
+    return x, y
+
+
+def calculate_movement(current_point, previous_point):
+    if current_point is None or previous_point is None:
+        return 0
+
+    return math.sqrt(
+        (current_point[0] - previous_point[0]) ** 2
+        + (current_point[1] - previous_point[1]) ** 2
+    )
+
+
+def is_posture_stable(pose_landmarks, previous_body_center=None):
     landmarks = pose_landmarks.landmark
 
     left_shoulder = landmarks[11]
@@ -267,5 +336,6 @@ def is_posture_stable(pose_landmarks):
         return False
 
     shoulder_tilt = abs(left_shoulder.y - right_shoulder.y)
+    body_movement = calculate_movement(get_body_center(pose_landmarks), previous_body_center)
 
-    return shoulder_tilt < 0.05
+    return shoulder_tilt < 0.05 and body_movement < 0.035

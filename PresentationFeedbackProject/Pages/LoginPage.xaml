@@ -31,99 +31,10 @@
                            FontSize="46"
                            FontWeight="Black"/>
 
-                <TextBlock Text="FEEDBACK"
+                <TextBlock Text="LOGIN"
                            Foreground="{StaticResource MintBrush}"
                            FontSize="46"
                            FontWeight="Black"/>
-
-                <TextBlock Text="발표 영상, 음성, 대본을 한 번에 분석하고&#x0a;개인 계정별 기록으로 다시 확인하세요."
-                           Foreground="{StaticResource BlackBrush}"
-                           FontSize="18"
-                           FontWeight="SemiBold"
-                           LineHeight="30"
-                           Margin="0,28,0,34"/>
-
-                <Grid Width="460"
-                      Height="170"
-                      HorizontalAlignment="Left">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <Border Grid.Column="0"
-                            Background="{StaticResource WhiteBrush}"
-                            BorderBrush="#CFE1DC"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="18"
-                            Margin="0,0,10,0">
-                        <StackPanel>
-                            <TextBlock Text="01"
-                                       Foreground="{StaticResource MintBrush}"
-                                       FontSize="22"
-                                       FontWeight="Black"/>
-                            <TextBlock Text="영상 업로드"
-                                       Foreground="{StaticResource BlackBrush}"
-                                       FontWeight="Black"
-                                       Margin="0,18,0,0"/>
-                            <TextBlock Text="녹화 파일 선택"
-                                       Foreground="{StaticResource TextGrayBrush}"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Margin="0,6,0,0"/>
-                        </StackPanel>
-                    </Border>
-
-                    <Border Grid.Column="1"
-                            Background="{StaticResource WhiteBrush}"
-                            BorderBrush="#CFE1DC"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="18"
-                            Margin="5,0">
-                        <StackPanel>
-                            <TextBlock Text="02"
-                                       Foreground="{StaticResource MintBrush}"
-                                       FontSize="22"
-                                       FontWeight="Black"/>
-                            <TextBlock Text="발표 분석"
-                                       Foreground="{StaticResource BlackBrush}"
-                                       FontWeight="Black"
-                                       Margin="0,18,0,0"/>
-                            <TextBlock Text="속도와 대본 확인"
-                                       Foreground="{StaticResource TextGrayBrush}"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Margin="0,6,0,0"/>
-                        </StackPanel>
-                    </Border>
-
-                    <Border Grid.Column="2"
-                            Background="{StaticResource WhiteBrush}"
-                            BorderBrush="#CFE1DC"
-                            BorderThickness="1"
-                            CornerRadius="8"
-                            Padding="18"
-                            Margin="10,0,0,0">
-                        <StackPanel>
-                            <TextBlock Text="03"
-                                       Foreground="{StaticResource MintBrush}"
-                                       FontSize="22"
-                                       FontWeight="Black"/>
-                            <TextBlock Text="기록 저장"
-                                       Foreground="{StaticResource BlackBrush}"
-                                       FontWeight="Black"
-                                       Margin="0,18,0,0"/>
-                            <TextBlock Text="이전 영상 다시 보기"
-                                       Foreground="{StaticResource TextGrayBrush}"
-                                       FontSize="12"
-                                       FontWeight="SemiBold"
-                                       Margin="0,6,0,0"/>
-                        </StackPanel>
-                    </Border>
-                </Grid>
             </StackPanel>
         </Border>
 

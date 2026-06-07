@@ -30,39 +30,10 @@
                            FontSize="48"
                            FontWeight="Black"/>
 
-                <TextBlock Text="YOUR ACCOUNT"
+                <TextBlock Text="ACCOUNT"
                            Foreground="{StaticResource MintBrush}"
                            FontSize="48"
                            FontWeight="Black"/>
-
-                <TextBlock Text="개인 계정으로 분석 결과를 저장하고&#x0a;이전 녹화 영상과 피드백을 다시 확인하세요."
-                           Foreground="{StaticResource BlackBrush}"
-                           FontSize="18"
-                           FontWeight="SemiBold"
-                           LineHeight="30"
-                           Margin="0,26,0,0"/>
-
-                <Border Width="360"
-                        Background="{StaticResource WhiteBrush}"
-                        BorderBrush="#CFE1DC"
-                        BorderThickness="1"
-                        CornerRadius="8"
-                        Padding="22"
-                        HorizontalAlignment="Left"
-                        Margin="0,42,0,0">
-                    <StackPanel>
-                        <TextBlock Text="저장되는 항목"
-                                   Foreground="{StaticResource MintBrush}"
-                                   FontSize="15"
-                                   FontWeight="Black"/>
-                        <TextBlock Text="영상 경로, 총점, 항목별 점수, 피드백, 발표 대본"
-                                   Foreground="{StaticResource TextGrayBrush}"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"
-                                   TextWrapping="Wrap"
-                                   Margin="0,10,0,0"/>
-                    </StackPanel>
-                </Border>
             </StackPanel>
         </Border>
 

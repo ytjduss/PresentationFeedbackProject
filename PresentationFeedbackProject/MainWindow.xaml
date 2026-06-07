@@ -5,7 +5,7 @@
         Width="1200"
         Height="760"
         WindowStartupLocation="CenterScreen"
-        Background="#FAFAFA">
+        Background="#F4FAF8">
 
     <Grid Margin="28">
         <Grid.RowDefinitions>
@@ -113,26 +113,13 @@
                 </StackPanel>
             </Grid>
 
-            <!-- Character Icon -->
+            <!-- Account Action -->
             <Grid Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Border Width="64"
-                        Height="54"
-                        Background="{StaticResource MintLightBrush}"
-                        BorderBrush="{StaticResource BlackBrush}"
-                        BorderThickness="1.5"
-                        CornerRadius="18">
-                    <TextBlock Text="ʕ•ᴥ•ʔ"
-                               FontSize="17"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"/>
-                </Border>
-                <TextBlock Text="✦"
-                           Foreground="{StaticResource MintBrush}"
-                           FontSize="20"
-                           FontWeight="Black"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Top"
-                           Margin="0,-12,-6,0"/>
+                <Button Content="로그아웃"
+                        Style="{StaticResource SecondaryButton}"
+                        MinWidth="96"
+                        Height="38"
+                        Click="LogoutButton_Click"/>
             </Grid>
         </Grid>
 

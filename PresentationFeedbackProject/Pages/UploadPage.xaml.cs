@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using PresentationFeedbackUI.Models;
 using PresentationFeedbackUI.Services;
 
 namespace PresentationFeedbackUI.Pages
@@ -14,6 +15,7 @@ namespace PresentationFeedbackUI.Pages
     {
         private readonly MainWindow mainWindow;
         private readonly VideoAnalysisService analysisService = new VideoAnalysisService();
+        private readonly AnalysisHistoryService historyService = new AnalysisHistoryService();
 
         private string selectedVideoPath = "";
 
@@ -26,6 +28,7 @@ namespace PresentationFeedbackUI.Pages
         {
             InitializeComponent();
             this.mainWindow = mainWindow;
+            LoadHistory();
         }
 
         private void SelectFileButton_Click(object sender, RoutedEventArgs e)
@@ -170,6 +173,13 @@ namespace PresentationFeedbackUI.Pages
                 var result = await analysisService.AnalyzeAsync(selectedVideoPath);
 
                 mainWindow.AnalysisViewModel.SetResult(result);
+
+                if (SessionManager.CurrentUser != null)
+                {
+                    historyService.Save(SessionManager.CurrentUser.Id, selectedVideoPath, result);
+                    LoadHistory();
+                }
+
                 mainWindow.NavigateToAnalysis();
             }
             catch (Exception ex)
@@ -181,6 +191,36 @@ namespace PresentationFeedbackUI.Pages
                 AnalyzeButton.Content = "분석 시작하기  →";
                 AnalyzeButton.IsEnabled = true;
             }
+        }
+
+        private void LoadHistory()
+        {
+            if (SessionManager.CurrentUser == null)
+            {
+                HistoryListBox.ItemsSource = null;
+                return;
+            }
+
+            HistoryListBox.ItemsSource = historyService.GetByUser(SessionManager.CurrentUser.Id);
+        }
+
+        private void OpenHistoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (HistoryListBox.SelectedItem is not AnalysisHistoryItem item)
+            {
+                MessageBox.Show("다시 볼 분석 기록을 선택해주세요.");
+                return;
+            }
+
+            if (!File.Exists(item.VideoPath))
+            {
+                MessageBox.Show("저장된 영상 파일을 찾을 수 없습니다.\n" + item.VideoPath);
+                return;
+            }
+
+            mainWindow.SelectedVideoPath = item.VideoPath;
+            mainWindow.AnalysisViewModel.SetResult(item.Result);
+            mainWindow.NavigateToAnalysis();
         }
     }
 }

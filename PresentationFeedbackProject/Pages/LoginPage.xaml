@@ -11,208 +11,120 @@
 
         <!-- Left Intro -->
         <Border Grid.Column="0"
-                Background="{StaticResource MintLightBrush}"
-                BorderBrush="{StaticResource BlackBrush}"
-                BorderThickness="1.5"
-                CornerRadius="18"
+                Background="{StaticResource SurfaceBrush}"
+                BorderBrush="#BFDCD4"
+                BorderThickness="1"
+                CornerRadius="8"
                 Padding="44"
                 Margin="0,0,14,0">
 
-            <Grid>
-                <!-- 배경 민트 도형 -->
-                <Ellipse Width="260"
-                         Height="260"
-                         Fill="{StaticResource MintBrush}"
-                         Opacity="0.24"
-                         HorizontalAlignment="Left"
-                         VerticalAlignment="Bottom"
-                         Margin="-110,0,0,-80"/>
+            <StackPanel VerticalAlignment="Center">
+                <Border Width="84"
+                        Height="6"
+                        Background="{StaticResource MintBrush}"
+                        CornerRadius="3"
+                        HorizontalAlignment="Left"
+                        Margin="0,0,0,28"/>
 
-                <Ellipse Width="160"
-                         Height="160"
-                         Fill="{StaticResource MintBrush}"
-                         Opacity="0.18"
-                         HorizontalAlignment="Right"
-                         VerticalAlignment="Bottom"
-                         Margin="0,0,-60,-40"/>
+                <TextBlock Text="PRESENTATION"
+                           Foreground="{StaticResource BlackBrush}"
+                           FontSize="46"
+                           FontWeight="Black"/>
 
-                <TextBlock Text="✦"
+                <TextBlock Text="FEEDBACK"
                            Foreground="{StaticResource MintBrush}"
-                           FontSize="34"
-                           FontWeight="Black"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
-                           Margin="0,0,110,0"/>
+                           FontSize="46"
+                           FontWeight="Black"/>
 
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="PRESENTATION"
-                               Foreground="{StaticResource BlackBrush}"
-                               FontSize="48"
-                               FontWeight="Black"/>
+                <TextBlock Text="발표 영상, 음성, 대본을 한 번에 분석하고&#x0a;개인 계정별 기록으로 다시 확인하세요."
+                           Foreground="{StaticResource BlackBrush}"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           LineHeight="30"
+                           Margin="0,28,0,34"/>
 
-                    <TextBlock Text="PRACTICE"
-                               Foreground="{StaticResource BlackBrush}"
-                               FontSize="48"
-                               FontWeight="Black"/>
+                <Grid Width="460"
+                      Height="170"
+                      HorizontalAlignment="Left">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock Text="발표 영상을 분석하고&#x0a;나만의 강점을 찾아보세요!"
-                               Foreground="{StaticResource BlackBrush}"
-                               FontSize="18"
-                               FontWeight="SemiBold"
-                               LineHeight="28"
-                               Margin="0,26,0,0"/>
-
-                    <!-- 오른쪽 위 캐릭터 느낌으로 변경한 곰돌이 캐릭터 -->
-                    <Grid Width="230"
-                          Height="190"
-                          HorizontalAlignment="Left"
-                          Margin="110,34,0,0">
-
-                        <!-- 몸통 -->
-                        <Border Width="118"
-                                Height="92"
-                                Background="{StaticResource WhiteBrush}"
-                                BorderBrush="{StaticResource BlackBrush}"
-                                BorderThickness="1.5"
-                                CornerRadius="34"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Bottom"
-                                Margin="0,0,0,16"/>
-
-                        <!-- 얼굴 -->
-                        <Border Width="126"
-                                Height="96"
-                                Background="{StaticResource WhiteBrush}"
-                                BorderBrush="{StaticResource BlackBrush}"
-                                BorderThickness="1.5"
-                                CornerRadius="42"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Top"
-                                Margin="0,16,0,0"/>
-
-                        <!-- 귀 -->
-                        <Ellipse Width="34"
-                                 Height="34"
-                                 Fill="{StaticResource WhiteBrush}"
-                                 Stroke="{StaticResource BlackBrush}"
-                                 StrokeThickness="1.5"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Top"
-                                 Margin="-82,4,0,0"/>
-
-                        <Ellipse Width="34"
-                                 Height="34"
-                                 Fill="{StaticResource WhiteBrush}"
-                                 Stroke="{StaticResource BlackBrush}"
-                                 StrokeThickness="1.5"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Top"
-                                 Margin="82,4,0,0"/>
-
-                        <!-- 볼 -->
-                        <Ellipse Width="20"
-                                 Height="14"
-                                 Fill="{StaticResource MintBrush}"
-                                 Opacity="0.55"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Top"
-                                 Margin="-58,68,0,0"/>
-
-                        <Ellipse Width="20"
-                                 Height="14"
-                                 Fill="{StaticResource MintBrush}"
-                                 Opacity="0.55"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Top"
-                                 Margin="58,68,0,0"/>
-
-                        <!-- 눈 -->
-                        <Ellipse Width="9"
-                                 Height="9"
-                                 Fill="{StaticResource BlackBrush}"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Top"
-                                 Margin="-34,54,0,0"/>
-
-                        <Ellipse Width="9"
-                                 Height="9"
-                                 Fill="{StaticResource BlackBrush}"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Top"
-                                 Margin="34,54,0,0"/>
-
-                        <!-- 코/입 -->
-                        <Ellipse Width="10"
-                                 Height="8"
-                                 Fill="{StaticResource BlackBrush}"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Top"
-                                 Margin="0,67,0,0"/>
-
-                        <TextBlock Text="ᴗ"
-                                   Foreground="{StaticResource BlackBrush}"
-                                   FontSize="24"
-                                   FontWeight="Bold"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Top"
-                                   Margin="0,68,0,0"/>
-
-                        <!-- 손 -->
-                        <Ellipse Width="26"
-                                 Height="26"
-                                 Fill="{StaticResource WhiteBrush}"
-                                 Stroke="{StaticResource BlackBrush}"
-                                 StrokeThickness="1.5"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Bottom"
-                                 Margin="-92,0,0,42"/>
-
-                        <Ellipse Width="26"
-                                 Height="26"
-                                 Fill="{StaticResource WhiteBrush}"
-                                 Stroke="{StaticResource BlackBrush}"
-                                 StrokeThickness="1.5"
-                                 HorizontalAlignment="Center"
-                                 VerticalAlignment="Bottom"
-                                 Margin="92,0,0,42"/>
-
-                        <!-- 말풍선 -->
-                        <Border Width="74"
-                                Height="40"
-                                Background="{StaticResource WhiteBrush}"
-                                BorderBrush="{StaticResource BlackBrush}"
-                                BorderThickness="1.5"
-                                CornerRadius="18"
-                                HorizontalAlignment="Right"
-                                VerticalAlignment="Top"
-                                Margin="0,18,0,0">
-                            <TextBlock Text="GOOD!"
+                    <Border Grid.Column="0"
+                            Background="{StaticResource WhiteBrush}"
+                            BorderBrush="#CFE1DC"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="18"
+                            Margin="0,0,10,0">
+                        <StackPanel>
+                            <TextBlock Text="01"
                                        Foreground="{StaticResource MintBrush}"
-                                       FontSize="12"
+                                       FontSize="22"
+                                       FontWeight="Black"/>
+                            <TextBlock Text="영상 업로드"
+                                       Foreground="{StaticResource BlackBrush}"
                                        FontWeight="Black"
-                                       HorizontalAlignment="Center"
-                                       VerticalAlignment="Center"/>
-                        </Border>
+                                       Margin="0,18,0,0"/>
+                            <TextBlock Text="녹화 파일 선택"
+                                       Foreground="{StaticResource TextGrayBrush}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
 
-                        <!-- 장식 -->
-                        <TextBlock Text="✦"
-                                   Foreground="{StaticResource MintBrush}"
-                                   FontSize="24"
-                                   FontWeight="Black"
-                                   HorizontalAlignment="Left"
-                                   VerticalAlignment="Center"
-                                   Margin="0,0,0,0"/>
+                    <Border Grid.Column="1"
+                            Background="{StaticResource WhiteBrush}"
+                            BorderBrush="#CFE1DC"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="18"
+                            Margin="5,0">
+                        <StackPanel>
+                            <TextBlock Text="02"
+                                       Foreground="{StaticResource MintBrush}"
+                                       FontSize="22"
+                                       FontWeight="Black"/>
+                            <TextBlock Text="발표 분석"
+                                       Foreground="{StaticResource BlackBrush}"
+                                       FontWeight="Black"
+                                       Margin="0,18,0,0"/>
+                            <TextBlock Text="속도와 대본 확인"
+                                       Foreground="{StaticResource TextGrayBrush}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
 
-                        <TextBlock Text="✦"
-                                   Foreground="{StaticResource MintBrush}"
-                                   FontSize="18"
-                                   FontWeight="Black"
-                                   HorizontalAlignment="Right"
-                                   VerticalAlignment="Bottom"
-                                   Margin="0,0,24,0"/>
-                    </Grid>
-                </StackPanel>
-            </Grid>
+                    <Border Grid.Column="2"
+                            Background="{StaticResource WhiteBrush}"
+                            BorderBrush="#CFE1DC"
+                            BorderThickness="1"
+                            CornerRadius="8"
+                            Padding="18"
+                            Margin="10,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="03"
+                                       Foreground="{StaticResource MintBrush}"
+                                       FontSize="22"
+                                       FontWeight="Black"/>
+                            <TextBlock Text="기록 저장"
+                                       Foreground="{StaticResource BlackBrush}"
+                                       FontWeight="Black"
+                                       Margin="0,18,0,0"/>
+                            <TextBlock Text="이전 영상 다시 보기"
+                                       Foreground="{StaticResource TextGrayBrush}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       Margin="0,6,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </StackPanel>
         </Border>
 
         <!-- Login Card -->
@@ -268,7 +180,7 @@
                 <Button Content="게스트로 시작하기"
                         Style="{StaticResource SecondaryButton}"
                         Height="48"
-                        Click="LoginButton_Click"/>
+                        Click="GuestButton_Click"/>
 
                 <StackPanel Orientation="Horizontal"
             HorizontalAlignment="Center"

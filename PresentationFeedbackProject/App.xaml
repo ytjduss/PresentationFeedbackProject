@@ -5,32 +5,33 @@
 
     <Application.Resources>
 
-        <SolidColorBrush x:Key="BlackBrush" Color="#111111"/>
+        <SolidColorBrush x:Key="BlackBrush" Color="#17211F"/>
         <SolidColorBrush x:Key="WhiteBrush" Color="#FFFFFF"/>
-        <SolidColorBrush x:Key="MintBrush" Color="#51D6B6"/>
-        <SolidColorBrush x:Key="MintLightBrush" Color="#E9FBF7"/>
-        <SolidColorBrush x:Key="GrayBrush" Color="#E8E8E8"/>
-        <SolidColorBrush x:Key="TextGrayBrush" Color="#777777"/>
+        <SolidColorBrush x:Key="MintBrush" Color="#18B899"/>
+        <SolidColorBrush x:Key="MintLightBrush" Color="#E6F8F3"/>
+        <SolidColorBrush x:Key="SurfaceBrush" Color="#F7FCFA"/>
+        <SolidColorBrush x:Key="GrayBrush" Color="#DCE7E4"/>
+        <SolidColorBrush x:Key="TextGrayBrush" Color="#60716D"/>
 
         <Style x:Key="Card" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource WhiteBrush}"/>
-            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderBrush" Value="#CFE1DC"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="CornerRadius" Value="16"/>
+            <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="Padding" Value="24"/>
             <Setter Property="Effect">
                 <Setter.Value>
-                    <DropShadowEffect Color="#999999"
-                                      BlurRadius="14"
-                                      ShadowDepth="2"
-                                      Opacity="0.18"/>
+                    <DropShadowEffect Color="#9AB8B1"
+                                      BlurRadius="8"
+                                      ShadowDepth="1"
+                                      Opacity="0.08"/>
                 </Setter.Value>
             </Setter>
         </Style>
 
         <Style x:Key="PrimaryButton" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource MintBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource BlackBrush}"/>
+            <Setter Property="Foreground" Value="{StaticResource WhiteBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource MintBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontSize" Value="15"/>
@@ -44,7 +45,7 @@
                         <Border Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="10"
+                                CornerRadius="6"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
@@ -57,8 +58,8 @@
         <Style x:Key="SecondaryButton" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource WhiteBrush}"/>
             <Setter Property="Foreground" Value="{StaticResource BlackBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BlackBrush}"/>
-            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="BorderBrush" Value="#9FC9BF"/>
+            <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontSize" Value="15"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Padding" Value="18,10"/>
@@ -70,7 +71,7 @@
                         <Border Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="10"
+                                CornerRadius="6"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center"
                                               VerticalAlignment="Center"/>
@@ -84,7 +85,7 @@
             <Setter Property="Height" Value="44"/>
             <Setter Property="Background" Value="{StaticResource WhiteBrush}"/>
             <Setter Property="Foreground" Value="{StaticResource BlackBrush}"/>
-            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderBrush" Value="#CFE1DC"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Padding" Value="12"/>
@@ -94,7 +95,7 @@
             <Setter Property="Height" Value="44"/>
             <Setter Property="Background" Value="{StaticResource WhiteBrush}"/>
             <Setter Property="Foreground" Value="{StaticResource BlackBrush}"/>
-            <Setter Property="BorderBrush" Value="#DDDDDD"/>
+            <Setter Property="BorderBrush" Value="#CFE1DC"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Padding" Value="12"/>

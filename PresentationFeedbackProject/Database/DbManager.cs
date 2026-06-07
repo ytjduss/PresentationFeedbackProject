@@ -50,6 +50,7 @@ namespace PresentationFeedbackUI.Database
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     user_id INTEGER NOT NULL,
                     video_path TEXT NOT NULL,
+                    video_name TEXT,
                     total_score INTEGER NOT NULL,
                     speech_rate_score INTEGER NOT NULL,
                     eye_contact_score INTEGER NOT NULL,
@@ -57,7 +58,17 @@ namespace PresentationFeedbackUI.Database
                     silence_score INTEGER NOT NULL,
                     content_score INTEGER NOT NULL,
                     wpm INTEGER NOT NULL,
+                    grade TEXT,
                     overall_feedback TEXT,
+                    speed_feedback TEXT,
+                    eye_contact_feedback TEXT,
+                    gesture_feedback TEXT,
+                    silence_feedback TEXT,
+                    content_feedback TEXT,
+                    transcript TEXT,
+                    presentation_topic TEXT,
+                    main_keywords TEXT,
+                    content_improvement TEXT,
                     created_at TEXT NOT NULL,
                     FOREIGN KEY (user_id) REFERENCES users(id)
                 );
@@ -66,6 +77,7 @@ namespace PresentationFeedbackUI.Database
             ExecuteNonQuery(connection, createUsersTable);
             ExecuteNonQuery(connection, createLoginLogsTable);
             ExecuteNonQuery(connection, createAnalysisResultsTable);
+            EnsureAnalysisResultColumns(connection);
 
             SeedDefaultUser(connection);
         }
@@ -75,6 +87,51 @@ namespace PresentationFeedbackUI.Database
             using var command = connection.CreateCommand();
             command.CommandText = sql;
             command.ExecuteNonQuery();
+        }
+
+        private static void EnsureAnalysisResultColumns(SqliteConnection connection)
+        {
+            AddColumnIfMissing(connection, "analysis_results", "video_name", "TEXT");
+            AddColumnIfMissing(connection, "analysis_results", "grade", "TEXT");
+            AddColumnIfMissing(connection, "analysis_results", "speed_feedback", "TEXT");
+            AddColumnIfMissing(connection, "analysis_results", "eye_contact_feedback", "TEXT");
+            AddColumnIfMissing(connection, "analysis_results", "gesture_feedback", "TEXT");
+            AddColumnIfMissing(connection, "analysis_results", "silence_feedback", "TEXT");
+            AddColumnIfMissing(connection, "analysis_results", "content_feedback", "TEXT");
+            AddColumnIfMissing(connection, "analysis_results", "transcript", "TEXT");
+            AddColumnIfMissing(connection, "analysis_results", "presentation_topic", "TEXT");
+            AddColumnIfMissing(connection, "analysis_results", "main_keywords", "TEXT");
+            AddColumnIfMissing(connection, "analysis_results", "content_improvement", "TEXT");
+        }
+
+        private static void AddColumnIfMissing(SqliteConnection connection, string tableName, string columnName, string columnType)
+        {
+            bool exists = false;
+
+            {
+                using var checkCommand = connection.CreateCommand();
+                checkCommand.CommandText = $"PRAGMA table_info({tableName});";
+
+                using var reader = checkCommand.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    if (reader.GetString(1).Equals(columnName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        exists = true;
+                        break;
+                    }
+                }
+            }
+
+            if (exists)
+            {
+                return;
+            }
+
+            using var alterCommand = connection.CreateCommand();
+            alterCommand.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {columnType};";
+            alterCommand.ExecuteNonQuery();
         }
 
         private static void SeedDefaultUser(SqliteConnection connection)
